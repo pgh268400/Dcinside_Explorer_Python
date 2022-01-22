@@ -26,6 +26,9 @@ Ui_MainWindow = uic.loadUiType(main_ui)[0]  # ui 가져오기
 # 글 링크 저장되어 있는 리스트
 all_link = {}
 
+# 갤러리 타입 전역변수 저장
+g_type = ""
+
 # 봇 차단을 위한 헤더 설정
 headers = {
     "Connection": "keep-alive",
@@ -44,6 +47,8 @@ headers = {
 }
 
 
+
+
 # -------------------------------------------
 
 # 글 검색 쓰레드
@@ -56,15 +61,14 @@ class Search_Thread(QThread):
     QTableWidgetUpdate = pyqtSignal(dict)  # 테이블 위젯 업데이트
 
     # 메인폼에서 상속받기
-    def __init__(self, parent):  # parent는 WndowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
+    def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
         super().__init__(parent)
         self.parent = parent  # self.parent를 사용하여 WindowClass 위젯을 제어할 수 있다.
 
     # 글 파싱 함수
     def article_parse(self, dc_id, keyword, page=1, search_pos=''):
-        global all_link
+        global all_link, g_type
         try:
-            g_type = self.parent.get_gallary_type(dc_id)
             url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page={page}&search_pos={search_pos}&s_type=search_subject_memo&s_keyword={keyword}"
             print(url);
             res = requests.get(url, headers=headers)
@@ -220,13 +224,13 @@ class Form(QMainWindow, Ui_MainWindow):
             result = "mgallery/board"
         else:
             result = "board"
-
         return result
 
     # 페이지 탐색용 함수
     def page_explorer(self, dc_id, keyword, search_pos=''):
+        global g_type
+
         page = {}
-        g_type = self.get_gallary_type(dc_id)
         url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page=1&search_pos={search_pos}&s_type=search_subject_memo&s_keyword={keyword}"
         res = requests.get(url, headers=headers)
         soup = BeautifulSoup(res.text, "lxml")
@@ -266,12 +270,14 @@ class Form(QMainWindow, Ui_MainWindow):
     # GUI----------------------------------------------
 
     def search(self):  # 글검색
-        global all_link
+        global all_link, g_type
+
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             self.articleView.setRowCount(0);  # 글 초기화
             all_link.clear()  # 리스트 비우기
             self.setTableAutoSize()
 
+            g_type = self.get_gallary_type(self.txt_id.text())
             thread = Search_Thread(self)
             thread.start()
 

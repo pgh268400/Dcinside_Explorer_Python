@@ -273,6 +273,38 @@ color : rgb(85, 85, 255)
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>txt_id</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>157</x>
+     <y>19</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>143</x>
+     <y>4</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>txt_repeat</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>48</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>47</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>search()</slot>

@@ -2,195 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68f86463-6b82-43e6-9f76-f2de086cedf4" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/DCINSIDE_SEARCH.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/Analysis-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/EXE-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/PKG-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/PYZ-00.pyz" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/PYZ-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/Tree-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/Tree-01.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/Tree-02.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/base_library.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/main.exe.manifest" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/main.pkg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/warn-main.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/build/main/xref-main.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/dist/DCINSIDE ARTICLE FINDER.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/dist/main.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/main.spec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/main.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/resource.qrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backup/DCINSIDE_SEARCH/search.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/Analysis-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/EXE-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/PKG-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/PYZ-00.pyz" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/PYZ-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/Tree-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/Tree-01.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/Tree-02.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/base_library.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/main.exe.manifest" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/main.pkg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/warn-main.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/main/xref-main.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/DCINSIDE_ARTICLE_FINDER.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/DCINSIDE_ARTICLE_FINDER.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/Prev/DCINSIDE ARTICLE FINDER.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/Prev/DCINSIDE ARTICLE FINDER.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/MSVCP140.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/MSVCP140_1.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/iconengines/qsvgicon.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qgif.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qicns.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qico.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qjpeg.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qsvg.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qtga.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qtiff.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qwbmp.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/imageformats/qwebp.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/platforms/qminimal.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/platforms/qoffscreen.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/platforms/qwebgl.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/platforms/qwindows.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/platformthemes/qxdgdesktopportal.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/plugins/styles/qwindowsvistastyle.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_ar.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_bg.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_ca.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_cs.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_da.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_de.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_en.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_es.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_fi.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_fr.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_gd.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_he.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_hu.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_it.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_ja.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_ko.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_lv.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_pl.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_ru.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_sk.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_tr.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_uk.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/Qt5/translations/qtbase_zh_TW.qm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/QtCore.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/QtGui.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/QtWidgets.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/sip.cp39-win_amd64.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qaxcontainer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qscintilla.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qtcharts.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qtprintsupport.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qtquickwidgets.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qtwebenginewidgets.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/PyQt5/uic/widget-plugins/qtwebkit.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Core.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5DBus.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Gui.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Network.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Qml.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5QmlModels.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Quick.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Svg.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5WebSockets.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/Qt5Widgets.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/VCRUNTIME140.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/VCRUNTIME140_1.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_asyncio.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_bz2.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_ctypes.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_decimal.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_elementtree.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_hashlib.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_lzma.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_multiprocessing.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_overlapped.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_queue.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_socket.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/_ssl.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-console-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-datetime-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-debug-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-errorhandling-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-file-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-file-l1-2-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-file-l2-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-handle-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-heap-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-interlocked-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-libraryloader-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-localization-l1-2-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-memory-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-namedpipe-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-processenvironment-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-processthreads-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-processthreads-l1-1-1.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-profile-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-rtlsupport-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-string-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-synch-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-synch-l1-2-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-sysinfo-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-timezone-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-core-util-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-conio-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-convert-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-environment-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-filesystem-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-heap-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-locale-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-math-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-process-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-runtime-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-stdio-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-string-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-time-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/api-ms-win-crt-utility-l1-1-0.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/base_library.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/certifi/cacert.pem" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/d3dcompiler_47.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/libEGL.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/libGLESv2.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/libcrypto-1_1.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/libffi-7.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/libssl-1_1.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/main.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/main.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/main.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/opengl32sw.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/pyexpat.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/python3.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/python39.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/select.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/ucrtbase.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/unicodedata.pyd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/main/user_save.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/user_save.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/img.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.spec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/search.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/search.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_save.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/user_save.dat" beforeDir="false" afterPath="$PROJECT_DIR$/dist/user_save.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.ui" beforeDir="false" afterPath="$PROJECT_DIR$/main.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -345,7 +160,8 @@
       <workItem from="1642756174231" duration="423000" />
       <workItem from="1642756608496" duration="3255000" />
       <workItem from="1642760981615" duration="991000" />
-      <workItem from="1642770337028" duration="753000" />
+      <workItem from="1642770337028" duration="2699000" />
+      <workItem from="1642855403228" duration="1001000" />
     </task>
     <servers />
   </component>
@@ -368,6 +184,6 @@
     <SUITE FILE_PATH="coverage/main_py$DCINSIDE_SEARCH.coverage" NAME="DCINSIDE_SEARCH 커버리지 결과" MODIFIED="1642668532584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main 커버리지 결과" MODIFIED="1642760918458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DCINSIDE_SEARCH$DCINSIDE_SEARCH.coverage" NAME="DCINSIDE_SEARCH 커버리지 결과" MODIFIED="1642611769973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/DCINSIDE_SEARCH$main.coverage" NAME="main 커버리지 결과" MODIFIED="1642625407480" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DCINSIDE_SEARCH$main.coverage" NAME="main 커버리지 결과" MODIFIED="1642856274357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
