@@ -29,7 +29,7 @@ all_link = {}
 # 갤러리 타입 전역변수 저장
 g_type = ""
 
-# 봇 차단을 위한 헤더 설정
+# 봇 차단 우회를 위한 헤더 설정
 headers = {
     "Connection": "keep-alive",
     "Cache-Control": "max-age=0",
@@ -46,8 +46,8 @@ headers = {
     "Accept-Language": "ko-KR,ko;q=0.9"
 }
 
-
-
+#프로그램 검색기능 실행중일때
+running = False
 
 # -------------------------------------------
 
@@ -109,7 +109,10 @@ class Search_Thread(QThread):
             # print(e)
             self.ThreadMessageEvent.emit('글을 가져오는 중 오류가 발생했습니다.')
 
+
     def run(self):
+        global running
+
         search_pos = ''
         id = self.parent.txt_id.text()
         keyword = self.parent.txt_keyword.text()
@@ -117,9 +120,13 @@ class Search_Thread(QThread):
 
         idx = 0
         while (True):
+            if running == False:
+                return
+
             if idx > loop_count or search_pos == 'last':
                 self.QLabelWidgetUpdate.emit('상태 : 검색 완료')
                 self.ThreadMessageEvent.emit('작업이 완료되었습니다.')
+                running = False
                 break
 
             page = self.parent.page_explorer(id, keyword, search_pos)
@@ -128,10 +135,15 @@ class Search_Thread(QThread):
             if not page['start'] == 0:  # 글이 있으면
 
                 for i in range(page['start'], page['end'] + 1):
+                    if running == False:
+                        return
+
                     self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
                     self.article_parse(id, keyword, page=i, search_pos=search_pos)
 
                     idx += 1  # 글을 하나 탐색하면 + 1
+
+
                     if idx > loop_count or search_pos == 'last':
                         break
 
@@ -143,8 +155,42 @@ class Search_Thread(QThread):
 
             search_pos = page['next_pos']
 
+    def stop(self):
+        self.working = False
+        self.quit()
+        self.wait(5000) #5000ms = 5s
 
-class Form(QMainWindow, Ui_MainWindow):
+class SlotEvent():
+    @pyqtSlot(str)
+    def ThreadMessageEvent(self, n):
+        QMessageBox.information(self, '알림', n, QMessageBox.Yes)
+
+    @pyqtSlot(dict)
+    def QTableWidgetUpdate(self, data):
+        rowPosition = self.articleView.rowCount()
+        self.articleView.insertRow(rowPosition)
+
+        item_num = QTableWidgetItem()
+        item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
+        self.articleView.setItem(rowPosition, 0, item_num)
+
+        self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
+        self.articleView.setItem(rowPosition, 2, QTableWidgetItem(data['nickname']))
+        self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['timestamp']))
+
+        item_refresh = QTableWidgetItem()
+        item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
+        self.articleView.setItem(rowPosition, 4, item_refresh)
+
+        item_recommend = QTableWidgetItem()
+        item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
+        self.articleView.setItem(rowPosition, 5, item_recommend)
+
+    @pyqtSlot(str)
+    def QLabelWidgetUpdate(self, data):
+        self.txt_status.setText(data)
+
+class Main(QMainWindow, Ui_MainWindow, SlotEvent):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -157,7 +203,20 @@ class Form(QMainWindow, Ui_MainWindow):
     def initializer(self):
         self.setTableWidget()  # Table Widget Column 폭 Fixed
         self.set_only_int()  # 반복횟수는 숫자만 입력할 수 있도록 고정
-        self.load_data('user_save.dat')
+        self.load_data('../../Desktop/user_save.dat')
+
+    # 폼 종료 이벤트
+    def closeEvent(self, QCloseEvent):
+
+        repeat = self.txt_repeat.text()
+        gallary_id = self.txt_id.text()
+        keyword = self.txt_keyword.text()
+
+        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword}
+        self.save_data(data, '../../Desktop/user_save.dat')
+
+        self.deleteLater()
+        QCloseEvent.accept()
 
     def save_data(self, dict, filename):
         # 데이터 저장
@@ -178,36 +237,23 @@ class Form(QMainWindow, Ui_MainWindow):
         self.onlyInt = QIntValidator()
         self.txt_repeat.setValidator(self.onlyInt)
 
-    # 폼 종료 이벤트
-    def closeEvent(self, QCloseEvent):
-
-        repeat = self.txt_repeat.text()
-        gallary_id = self.txt_id.text()
-        keyword = self.txt_keyword.text()
-
-        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword}
-        self.save_data(data, 'user_save.dat')
-
-        self.deleteLater()
-        QCloseEvent.accept()
-
     def setTableWidget(self):
         self.articleView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
         self.articleView.setColumnWidth(0, 60);
         self.articleView.setColumnWidth(1, 430);
-        self.articleView.setColumnWidth(2, 60);
+        self.articleView.setColumnWidth(2, 100);
         self.articleView.setColumnWidth(3, 60);
         self.articleView.setColumnWidth(4, 40);
         self.articleView.setColumnWidth(5, 40);
 
     def setTableAutoSize(self):
         header = self.articleView.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
 
     # 갤러리 타입 가져오기(마이너, 일반)
     def get_gallary_type(self, dc_id):
@@ -270,21 +316,29 @@ class Form(QMainWindow, Ui_MainWindow):
     # GUI----------------------------------------------
 
     def search(self):  # 글검색
-        global all_link, g_type
+        global all_link, g_type, running
+
+        if running == True: #이미 실행중이면
+            reply = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                running = False
+                self.thread.stop()
 
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
+            running = True
             self.articleView.setRowCount(0);  # 글 초기화
             all_link.clear()  # 리스트 비우기
             self.setTableAutoSize()
 
             g_type = self.get_gallary_type(self.txt_id.text())
-            thread = Search_Thread(self)
-            thread.start()
+            self.thread = Search_Thread(self)
+            self.thread.start()
 
             # 쓰레드 이벤트 연결
-            thread.ThreadMessageEvent.connect(self.ThreadMessageEvent)
-            thread.QTableWidgetUpdate.connect(self.QTableWidgetUpdate)
-            thread.QLabelWidgetUpdate.connect(self.QLabelWidgetUpdate)
+            self.thread.ThreadMessageEvent.connect(self.ThreadMessageEvent)
+            self.thread.QTableWidgetUpdate.connect(self.QTableWidgetUpdate)
+            self.thread.QLabelWidgetUpdate.connect(self.QLabelWidgetUpdate)
         else:
             QMessageBox.information(self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
 
@@ -306,41 +360,8 @@ class Form(QMainWindow, Ui_MainWindow):
         self.articleView.clearSelection()
         self.articleView.clearFocus()
 
-    # 쓰레드 이벤트(UI UPDATE) --------------------------------------------
-    @pyqtSlot(str)
-    def ThreadMessageEvent(self, n):
-        QMessageBox.information(self, '알림', n, QMessageBox.Yes)
-
-    @pyqtSlot(dict)
-    def QTableWidgetUpdate(self, data):
-
-        rowPosition = self.articleView.rowCount()
-        self.articleView.insertRow(rowPosition)
-
-        item_num = QTableWidgetItem()
-        item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 0, item_num)
-
-        self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
-        self.articleView.setItem(rowPosition, 2, QTableWidgetItem(data['nickname']))
-        self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['timestamp']))
-
-        item_refresh = QTableWidgetItem()
-        item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 4, item_refresh)
-
-        item_recommend = QTableWidgetItem()
-        item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 5, item_recommend)
-
-    @pyqtSlot(str)
-    def QLabelWidgetUpdate(self, data):
-        self.txt_status.setText(data)
-
-    # ---------------------------------------------------
-
 
 app = QApplication([])
-frm = Form()
+main = Main()
 QApplication.processEvents()
 sys.exit(app.exec_())
