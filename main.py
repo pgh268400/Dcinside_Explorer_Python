@@ -306,8 +306,10 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
             page['end'] = 1  # 1페이지 밖에 없음.
         else:
             # 끝 보기 버튼이 있나 검사
-            page_end_btn = soup.find('a', attrs={"class": "page_end"})
-            if page_end_btn:
+            page_end_btn = soup.select('a.page_end')
+            #page_end_btn = soup.find('a', attrs={"class": "page_end"})
+            if len(page_end_btn) == 2:
+                page_end_btn = page_end_btn[0]
                 final_page = int(page_end_btn['href'].split('&page=')[1].split("&")[0]) + 1
                 page['start'] = 1;
                 page['end'] = final_page
