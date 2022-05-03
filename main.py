@@ -25,11 +25,11 @@ Ui_MainWindow = uic.loadUiType(main_ui)[0]  # ui 가져오기
 
 # 검색 옵션에 따른 쿼리 스트링
 search_dict = {
-"제목+내용" : "search_subject_memo",
-"제목" : "search_subject",
-"내용" : "search_memo",
-"글쓴이" : "search_name",
-"댓글" : "search_comment"
+    "제목+내용": "search_subject_memo",
+    "제목": "search_subject",
+    "내용": "search_memo",
+    "글쓴이": "search_name",
+    "댓글": "search_comment"
 }
 
 # 글 링크 저장되어 있는 리스트
@@ -55,8 +55,9 @@ headers = {
     "Accept-Language": "ko-KR,ko;q=0.9"
 }
 
-#프로그램 검색기능 실행중일때
+# 프로그램 검색기능 실행중일때
 running = False
+
 
 # -------------------------------------------
 
@@ -96,15 +97,16 @@ class Search_Thread(QThread):
 
                 title = element.select(".ub-word > a")[0].text
                 reply = element.select(".ub-word > a.reply_numbox > .reply_num")
+
                 if reply:
-                    reply = reply[0].text
+                    reply = reply[0].text.replace("[", "").replace("]", "")
                 else:
-                    reply = ""
+                    reply = "0"
+
                 nickname = element.select(".ub-writer")[0].text.strip()
                 timestamp = element.select(".gall_date")[0].text
                 refresh = element.select(".gall_count")[0].text
                 recommend = element.select(".gall_recommend")[0].text
-                # print(link, num, title, reply, nickname, timestamp, refresh, recommend)
 
                 all_link[num] = link;  # 링크 추가
 
@@ -117,7 +119,6 @@ class Search_Thread(QThread):
         except Exception as e:
             # print(e)
             self.ThreadMessageEvent.emit('글을 가져오는 중 오류가 발생했습니다.')
-
 
     def run(self):
         global running
@@ -153,7 +154,6 @@ class Search_Thread(QThread):
 
                     idx += 1  # 글을 하나 탐색하면 + 1
 
-
                     if idx > loop_count or search_pos == 'last':
                         break
 
@@ -162,13 +162,13 @@ class Search_Thread(QThread):
             self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
             idx += 1  # 글을 못찾고 넘어가도 + 1
 
-
             search_pos = page['next_pos']
 
     def stop(self):
         self.working = False
         self.quit()
-        self.wait(5000) #5000ms = 5s
+        self.wait(5000)  # 5000ms = 5s
+
 
 class SlotEvent():
     @pyqtSlot(str)
@@ -185,20 +185,26 @@ class SlotEvent():
         self.articleView.setItem(rowPosition, 0, item_num)
 
         self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
-        self.articleView.setItem(rowPosition, 2, QTableWidgetItem(data['nickname']))
-        self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['timestamp']))
+
+        item_reply = QTableWidgetItem()
+        item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
+        self.articleView.setItem(rowPosition, 2, item_reply)
+
+        self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['nickname']))
+        self.articleView.setItem(rowPosition, 4, QTableWidgetItem(data['timestamp']))
 
         item_refresh = QTableWidgetItem()
         item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 4, item_refresh)
+        self.articleView.setItem(rowPosition, 5, item_refresh)
 
         item_recommend = QTableWidgetItem()
         item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 5, item_recommend)
+        self.articleView.setItem(rowPosition, 6, item_recommend)
 
     @pyqtSlot(str)
     def QLabelWidgetUpdate(self, data):
         self.txt_status.setText(data)
+
 
 class Main(QMainWindow, Ui_MainWindow, SlotEvent):
     def __init__(self):
@@ -223,7 +229,7 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
         keyword = self.txt_keyword.text()
         comboBox = self.comboBox.currentText()
 
-        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword, 'search_type' : comboBox}
+        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword, 'search_type': comboBox}
         self.save_data(data, 'user_save.dat')
 
         self.deleteLater()
@@ -252,17 +258,19 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
 
     def setTableWidget(self):
         self.articleView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
-        self.articleView.setColumnWidth(0, 60);
-        self.articleView.setColumnWidth(1, 430);
-        self.articleView.setColumnWidth(2, 100);
-        self.articleView.setColumnWidth(3, 60);
-        self.articleView.setColumnWidth(4, 40);
-        self.articleView.setColumnWidth(5, 40);
+        self.articleView.setColumnWidth(0, 60);  # 글 번호
+        self.articleView.setColumnWidth(1, 430);  # 제목
+        self.articleView.setColumnWidth(2, 50);  # 댓글수
+
+        self.articleView.setColumnWidth(3, 100);  # 글쓴이
+        self.articleView.setColumnWidth(4, 60);  # 작성일
+        self.articleView.setColumnWidth(5, 40);  # 조회
+        self.articleView.setColumnWidth(6, 40);  # 추천
 
     def setTableAutoSize(self):
         header = self.articleView.horizontalHeader()
 
-        #성능을 위해 이제 자동 컬럼조정은 사용하지 않는다.
+        # 성능을 위해 이제 자동 컬럼조정은 사용하지 않는다.
         # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         # header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
         # header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
@@ -307,7 +315,7 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
         else:
             # 끝 보기 버튼이 있나 검사
             page_end_btn = soup.select('a.page_end')
-            #page_end_btn = soup.find('a', attrs={"class": "page_end"})
+            # page_end_btn = soup.find('a', attrs={"class": "page_end"})
             if len(page_end_btn) == 2:
                 page_end_btn = page_end_btn[0]
                 final_page = int(page_end_btn['href'].split('&page=')[1].split("&")[0]) + 1
@@ -339,10 +347,10 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
     def search(self):  # 글검색
         global all_link, g_type, running
 
-        if running == True: #이미 실행중이면
-            reply = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if reply == QMessageBox.Yes:
+        if running == True:  # 이미 실행중이면
+            dialog = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
+                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if dialog == QMessageBox.Yes:
                 running = False
                 self.thread.stop()
 

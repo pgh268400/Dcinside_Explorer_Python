@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
+    <width>812</width>
     <height>802</height>
    </rect>
   </property>
@@ -43,6 +43,22 @@ QPushButton {
 QPushButton:pressed {
    background-color: #29367C;
     border-style: inset;
+}
+
+QComboBox {
+	border: 4px solid #3B4890;
+	padding: 4px;
+}
+
+QComboBox::drop-down 
+{
+    border: 0px;
+}
+
+QComboBox::down-arrow {
+    image: url(git.png);
+    width: 28px;
+    height: 28px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -50,13 +66,48 @@ QPushButton:pressed {
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,3,10,0">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,2,3,10,0">
         <property name="spacing">
          <number>2</number>
         </property>
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
+        <item>
+         <widget class="QComboBox" name="comboBox">
+          <property name="font">
+           <font>
+            <family>맑은 고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <item>
+           <property name="text">
+            <string>제목+내용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>제목</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>내용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>글쓴이</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>댓글</string>
+           </property>
+          </item>
+         </widget>
+        </item>
         <item>
          <widget class="QLineEdit" name="txt_repeat">
           <property name="font">
@@ -120,6 +171,8 @@ QPushButton:pressed {
           <property name="font">
            <font>
             <family>나눔고딕</family>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
@@ -153,6 +206,11 @@ color : rgb(85, 85, 255)
         <column>
          <property name="text">
           <string>제목</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>댓글수</string>
          </property>
         </column>
         <column>
