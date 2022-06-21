@@ -81,7 +81,7 @@ class SearchThread(QThread):
         global all_link, g_type
         try:
             url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page={page}&search_pos={search_pos}&s_type={search_type}&s_keyword={keyword}"
-            print(url);
+            #print(url);
             res = requests.get(url, headers=headers)
             soup = BeautifulSoup(res.text, "lxml")
 
@@ -104,6 +104,9 @@ class SearchThread(QThread):
                 else:
                     reply = "0"
 
+                if '/' in reply:
+                    reply = reply.split('/')[0]
+
                 nickname = element.select(".ub-writer")[0].text.strip()
                 timestamp = element.select(".gall_date")[0].text
                 refresh = element.select(".gall_count")[0].text
@@ -116,14 +119,12 @@ class SearchThread(QThread):
                                 'refresh': refresh, 'recommend': recommend}
                 self.QTableWidgetUpdate.emit(article_data)  # 글 데이터 방출
 
-
         except Exception as e:
             # print(e)
             self.ThreadMessageEvent.emit('글을 가져오는 중 오류가 발생했습니다.')
 
     def run(self):
         self.mutex.lock()
-
         global running
 
         search_pos = ''
@@ -133,10 +134,7 @@ class SearchThread(QThread):
         search_type = search_dict[self.parent.comboBox.currentText()]
 
         idx = 0
-        while (True):
-            if running == False:
-                return
-
+        while running:
             if idx > loop_count or search_pos == 'last':
                 self.QLabelWidgetUpdate.emit('상태 : 검색 완료')
                 self.ThreadMessageEvent.emit('작업이 완료되었습니다.')
@@ -144,12 +142,12 @@ class SearchThread(QThread):
                 break
 
             page = self.parent.page_explorer(id, keyword, search_pos)
-            print(page)
+            #print(page)
 
             if not page['start'] == 0:  # 글이 있으면
 
                 for i in range(page['start'], page['end'] + 1):
-                    if running == False:
+                    if not running:
                         return
 
                     self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
@@ -160,20 +158,24 @@ class SearchThread(QThread):
                     if idx > loop_count or search_pos == 'last':
                         break
 
-                    time.sleep(0.1)  # 디시 서버를 위한 딜레이
+                    # time.sleep(0.1)  # 디시 서버를 위한 딜레이
+                    self.msleep(100)  # ※주의 QThread에서 제공하는 sleep을 사용
 
             self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
             idx += 1  # 글을 못찾고 넘어가도 + 1
 
             search_pos = page['next_pos']
-
         self.mutex.unlock()
+        running = False
 
     def stop(self):
+        global running
+        running = False
         self.working = False
-        self.mutex.unlock()
+
         self.quit()
-        self.wait(5000)  # 5000ms = 5s
+        self.msleep(5000) #wait로 하면 안되고 msleep으로 해야 제대로 mutex lock이 작동하는듯 하다.
+        #self.wait(5000)  # 5000ms = 5s
 
 
 class SlotEvent:
@@ -183,6 +185,10 @@ class SlotEvent:
 
     @pyqtSlot(dict)
     def QTableWidgetUpdate(self, data):
+        #업데이트를 너무 자주하면 GUI에 제대로 반영이 안되는 것이 있음.
+        #IO 성능을 포기하더라도 delay보단 print로 출력해서 주는게 더 낫다는 생각..
+        print(data)
+
         rowPosition = self.articleView.rowCount()
         self.articleView.insertRow(rowPosition)
 
@@ -352,8 +358,8 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
     def search(self):  # 글검색
         global all_link, g_type, running
 
-        if running == True:  # 이미 실행중이면
-            dialog = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
+        if running:  # 이미 실행중이면
+            dialog = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까? (이전 검색을 중단하기 위해 프로그램이 잠시 멈출 수 있습니다.)',
                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 running = False
