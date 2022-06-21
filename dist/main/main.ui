@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>812</width>
+    <height>802</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DCINSIDE ARTICLE FINDER</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>main.ico</normaloff>main.ico</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLineEdit {
+	border: 4px solid #3B4890;
+	padding: 4px;
+}
+
+QLineEdit:focus{
+	border: 4px solid rgb(0, 170, 255);
+}
+
+QPushButton {
+    background-color: #3b4890;
+	min-width: 5em;
+    padding: 8px;
+	color:white;
+
+    border-style: outset;
+    border-width: 2px;
+	border-radius : 5px;
+
+    border-color: beige;
+}
+
+QPushButton:pressed {
+   background-color: #29367C;
+    border-style: inset;
+}
+
+QComboBox {
+	border: 4px solid #3B4890;
+	padding: 4px;
+}
+
+QComboBox::drop-down 
+{
+    border: 0px;
+}
+
+QComboBox::down-arrow {
+    image: url(git.png);
+    width: 28px;
+    height: 28px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,2,3,10,0">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
+        <item>
+         <widget class="QComboBox" name="comboBox">
+          <property name="font">
+           <font>
+            <family>맑은 고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <item>
+           <property name="text">
+            <string>제목+내용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>제목</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>내용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>글쓴이</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>댓글</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txt_repeat">
+          <property name="font">
+           <font>
+            <family>맑은 고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#searchBox {
+	border: 4px solid #3b4890;
+}</string>
+          </property>
+          <property name="placeholderText">
+           <string>탐색 횟수</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txt_id">
+          <property name="font">
+           <font>
+            <family>맑은 고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#searchBox {
+	border: 4px solid #3b4890;
+}</string>
+          </property>
+          <property name="placeholderText">
+           <string>갤러리 ID</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="txt_keyword">
+          <property name="font">
+           <font>
+            <family>맑은 고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="placeholderText">
+           <string>검색어</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_Search">
+          <property name="font">
+           <font>
+            <family>나눔고딕</family>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>검색</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="articleView">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label{
+color : rgb(85, 85, 255)
+}</string>
+        </property>
+        <property name="showGrid">
+         <bool>true</bool>
+        </property>
+        <property name="gridStyle">
+         <enum>Qt::SolidLine</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+        <column>
+         <property name="text">
+          <string>번호</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>제목</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>글쓴이</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>작성일</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>조회</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>추천</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>나눔고딕</family>
+            <weight>75</weight>
+            <italic>true</italic>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel#label{
+color : rgb(85, 85, 255)
+}</string>
+          </property>
+          <property name="text">
+           <string>Copyright 2022. File(pgh268400@naver.com) all rights reserved.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="txt_status">
+          <property name="font">
+           <font>
+            <family>나눔고딕</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>상태 : IDLE</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>btn_Search</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>685</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>articleView</sender>
+   <signal>itemDoubleClicked(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>item_dbl_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>604</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>txt_keyword</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>255</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>7</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>txt_id</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>157</x>
+     <y>19</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>143</x>
+     <y>4</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>txt_repeat</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>48</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>47</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>search()</slot>
+  <slot>click()</slot>
+  <slot>item_dbl_click()</slot>
+ </slots>
+</ui>
