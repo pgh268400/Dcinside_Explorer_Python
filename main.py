@@ -62,7 +62,7 @@ running = False
 # -------------------------------------------
 
 # 글 검색 쓰레드
-class Search_Thread(QThread):
+class SearchThread(QThread):
     # PYQT의 쓰레드는 UI Update에 있어서 Unsafe하기 때문에
     # 무조건 시그널-슬롯으로 UI 업데이트를 진행해줘야 한다!!
 
@@ -74,13 +74,14 @@ class Search_Thread(QThread):
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
         super().__init__(parent)
         self.parent = parent  # self.parent를 사용하여 WindowClass 위젯을 제어할 수 있다.
+        self.mutex = QMutex()  # mutex은 쓰레드 데이터 경쟁을 막기 위해 사용한다. Thread에서의 lock과 유사.
 
     # 글 파싱 함수
     def article_parse(self, dc_id, keyword, search_type, page=1, search_pos=''):
         global all_link, g_type
         try:
             url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page={page}&search_pos={search_pos}&s_type={search_type}&s_keyword={keyword}"
-            print(url);
+            #print(url);
             res = requests.get(url, headers=headers)
             soup = BeautifulSoup(res.text, "lxml")
 
@@ -103,6 +104,9 @@ class Search_Thread(QThread):
                 else:
                     reply = "0"
 
+                if '/' in reply:
+                    reply = reply.split('/')[0]
+
                 nickname = element.select(".ub-writer")[0].text.strip()
                 timestamp = element.select(".gall_date")[0].text
                 refresh = element.select(".gall_count")[0].text
@@ -115,12 +119,12 @@ class Search_Thread(QThread):
                                 'refresh': refresh, 'recommend': recommend}
                 self.QTableWidgetUpdate.emit(article_data)  # 글 데이터 방출
 
-
         except Exception as e:
             # print(e)
             self.ThreadMessageEvent.emit('글을 가져오는 중 오류가 발생했습니다.')
 
     def run(self):
+        self.mutex.lock()
         global running
 
         search_pos = ''
@@ -130,10 +134,7 @@ class Search_Thread(QThread):
         search_type = search_dict[self.parent.comboBox.currentText()]
 
         idx = 0
-        while (True):
-            if running == False:
-                return
-
+        while running:
             if idx > loop_count or search_pos == 'last':
                 self.QLabelWidgetUpdate.emit('상태 : 검색 완료')
                 self.ThreadMessageEvent.emit('작업이 완료되었습니다.')
@@ -141,12 +142,12 @@ class Search_Thread(QThread):
                 break
 
             page = self.parent.page_explorer(id, keyword, search_pos)
-            print(page)
+            #print(page)
 
             if not page['start'] == 0:  # 글이 있으면
 
                 for i in range(page['start'], page['end'] + 1):
-                    if running == False:
+                    if not running:
                         return
 
                     self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
@@ -157,26 +158,37 @@ class Search_Thread(QThread):
                     if idx > loop_count or search_pos == 'last':
                         break
 
-                    time.sleep(0.1)  # 디시 서버를 위한 딜레이
+                    # time.sleep(0.1)  # 디시 서버를 위한 딜레이
+                    self.msleep(100)  # ※주의 QThread에서 제공하는 sleep을 사용
 
             self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
             idx += 1  # 글을 못찾고 넘어가도 + 1
 
             search_pos = page['next_pos']
+        self.mutex.unlock()
+        running = False
 
     def stop(self):
+        global running
+        running = False
         self.working = False
+
         self.quit()
-        self.wait(5000)  # 5000ms = 5s
+        self.msleep(5000) #wait로 하면 안되고 msleep으로 해야 제대로 mutex lock이 작동하는듯 하다.
+        #self.wait(5000)  # 5000ms = 5s
 
 
-class SlotEvent():
+class SlotEvent:
     @pyqtSlot(str)
     def ThreadMessageEvent(self, n):
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
 
     @pyqtSlot(dict)
     def QTableWidgetUpdate(self, data):
+        #업데이트를 너무 자주하면 GUI에 제대로 반영이 안되는 것이 있음.
+        #IO 성능을 포기하더라도 delay보단 print로 출력해서 주는게 더 낫다는 생각..
+        print(data)
+
         rowPosition = self.articleView.rowCount()
         self.articleView.insertRow(rowPosition)
 
@@ -200,6 +212,8 @@ class SlotEvent():
         item_recommend = QTableWidgetItem()
         item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
         self.articleView.setItem(rowPosition, 6, item_recommend)
+
+
 
     @pyqtSlot(str)
     def QLabelWidgetUpdate(self, data):
@@ -269,7 +283,6 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
 
     def setTableAutoSize(self):
         header = self.articleView.horizontalHeader()
-
         # 성능을 위해 이제 자동 컬럼조정은 사용하지 않는다.
         # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         # header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
@@ -347,8 +360,8 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
     def search(self):  # 글검색
         global all_link, g_type, running
 
-        if running == True:  # 이미 실행중이면
-            dialog = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
+        if running:  # 이미 실행중이면
+            dialog = QMessageBox.question(self, 'Message', '검색이 진행중입니다. 새로 검색을 시작하시겠습니까? (이전 검색을 중단하기 위해 프로그램이 잠시 멈출 수 있습니다.)',
                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 running = False
@@ -361,7 +374,7 @@ class Main(QMainWindow, Ui_MainWindow, SlotEvent):
             self.setTableAutoSize()
 
             g_type = self.get_gallary_type(self.txt_id.text())
-            self.thread = Search_Thread(self)
+            self.thread = SearchThread(self)
             self.thread.start()
 
             # 쓰레드 이벤트 연결
