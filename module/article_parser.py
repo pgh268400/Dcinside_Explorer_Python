@@ -53,7 +53,7 @@ class DCArticleParser:
             dc_id = self.__dc_id
 
             url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page={page}&search_pos={search_pos}&s_type={s_type}&s_keyword={keyword}"
-            print(url)
+            # print(url)
 
             res = requests.get(url, headers=headers)
             soup = BeautifulSoup(res.text, "lxml")

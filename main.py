@@ -28,7 +28,7 @@ class SearchThread(QThread):
 
     ThreadMessageEvent = pyqtSignal(str)  # 사용자 정의 시그널
     QLabelWidgetUpdate = pyqtSignal(str)  # 라벨 위젯 업데이트
-    QTableWidgetUpdate = pyqtSignal(dict)  # 테이블 위젯 업데이트
+    QTableWidgetUpdate = pyqtSignal(list)  # 테이블 위젯 업데이트
 
     # 메인폼에서 상속받기
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
@@ -68,8 +68,7 @@ class SearchThread(QThread):
 
                     self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
                     article = parser.article_parse(keyword, s_type, page=i, search_pos=search_pos)
-                    for element in article:
-                        self.QTableWidgetUpdate.emit(element)
+                    self.QTableWidgetUpdate.emit(article)
 
                     idx += 1  # 글을 하나 탐색하면 + 1
 
@@ -200,51 +199,55 @@ class Main(QMainWindow, Ui_MainWindow):
         global parser
 
         if parser:
-            all_link = parser.get_link_list()
-            row = self.articleView.currentIndex().row()
-            column = self.articleView.currentIndex().column()
+            try:
+                all_link = parser.get_link_list()
+                row = self.articleView.currentIndex().row()
+                column = self.articleView.currentIndex().column()
 
-            # if (column == 0):
-            #     article_id = self.articleView.item(row, column).text()
-            #     webbrowser.open(all_link[article_id])
+                # if (column == 0):
+                #     article_id = self.articleView.item(row, column).text()
+                #     webbrowser.open(all_link[article_id])
 
-            article_id = self.articleView.item(row, 0).text()
-            webbrowser.open(all_link[article_id])
+                article_id = self.articleView.item(row, 0).text()
+                webbrowser.open(all_link[article_id])
 
-            # 포커스 초기화 & 선택 초기화
-            self.articleView.clearSelection()
-            self.articleView.clearFocus()
+                # 포커스 초기화 & 선택 초기화
+                self.articleView.clearSelection()
+                self.articleView.clearFocus()
+            except Exception as e:
+                pass
 
     # Slot Event
     @pyqtSlot(str)
     def ThreadMessageEvent(self, n):
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
 
-    @pyqtSlot(dict)
-    def QTableWidgetUpdate(self, data):
-        rowPosition = self.articleView.rowCount()
-        self.articleView.insertRow(rowPosition)
+    @pyqtSlot(list)
+    def QTableWidgetUpdate(self, article):
+        for data in article:
+            rowPosition = self.articleView.rowCount()
+            self.articleView.insertRow(rowPosition)
 
-        item_num = QTableWidgetItem()
-        item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 0, item_num)
+            item_num = QTableWidgetItem()
+            item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
+            self.articleView.setItem(rowPosition, 0, item_num)
 
-        self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
+            self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
 
-        item_reply = QTableWidgetItem()
-        item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 2, item_reply)
+            item_reply = QTableWidgetItem()
+            item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
+            self.articleView.setItem(rowPosition, 2, item_reply)
 
-        self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['nickname']))
-        self.articleView.setItem(rowPosition, 4, QTableWidgetItem(data['timestamp']))
+            self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['nickname']))
+            self.articleView.setItem(rowPosition, 4, QTableWidgetItem(data['timestamp']))
 
-        item_refresh = QTableWidgetItem()
-        item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 5, item_refresh)
+            item_refresh = QTableWidgetItem()
+            item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
+            self.articleView.setItem(rowPosition, 5, item_refresh)
 
-        item_recommend = QTableWidgetItem()
-        item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
-        self.articleView.setItem(rowPosition, 6, item_recommend)
+            item_recommend = QTableWidgetItem()
+            item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
+            self.articleView.setItem(rowPosition, 6, item_recommend)
 
     @pyqtSlot(str)
     def QLabelWidgetUpdate(self, data):
