@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "C:/Users/pgh26/PycharmProjects/DCINSIDE_SEARCH/resource/main.ico"
+   "value": "C:/Users/pgh26/PycharmProjects/DCINSIDE_SEARCH/main.ico"
   },
   {
    "optionDest": "ascii",
@@ -68,6 +68,10 @@
   {
    "optionDest": "datas",
    "value": "C:/Users/pgh26/PycharmProjects/DCINSIDE_SEARCH/main.ui;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/pgh26/PycharmProjects/DCINSIDE_SEARCH/main.ico;."
   }
  ],
  "nonPyinstallerOptions": {

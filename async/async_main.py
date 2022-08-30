@@ -60,7 +60,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.initializer()
 
-        window_ico = resource_path('../resource/main.ico')
+        window_ico = resource_path('../main.ico')
         self.setWindowIcon(QIcon(window_ico))
         self.show()
 

@@ -31,6 +31,7 @@ class SearchThread(QThread):
     ThreadMessageEvent = pyqtSignal(str)  # 사용자 정의 시그널
     QLabelWidgetUpdate = pyqtSignal(str)  # 라벨 위젯 업데이트
     QTableWidgetUpdate = pyqtSignal(list)  # 테이블 위젯 업데이트
+    QTableWidgetSetSort = pyqtSignal(bool) # 테이블 위젯 컬럼 정렬 기능 ON/OFF
 
     # 메인폼에서 상속받기
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
@@ -50,6 +51,9 @@ class SearchThread(QThread):
         parser = DCArticleParser(dc_id=id)  # 객체 생성
 
         idx = 0
+
+        #데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
+        self.QTableWidgetSetSort.emit(False)
         while True:
             if not running:
                 return
@@ -86,6 +90,7 @@ class SearchThread(QThread):
             idx += 1  # 글을 못찾고 넘어가도 + 1
 
             search_pos = page['next_pos']
+        self.QTableWidgetSetSort.emit(True)
 
     def stop(self):
         self.quit()
@@ -108,7 +113,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.initializer()
 
-        window_ico = resource_path('resource/main.ico')
+        window_ico = resource_path('main.ico')
         self.setWindowIcon(QIcon(window_ico))
         self.show()
 
@@ -184,10 +189,11 @@ class Main(QMainWindow, Ui_MainWindow):
                                           '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if dialog == QMessageBox.Yes:
-                self.thread.terminate()
-                self.thread.quit()
-                self.thread.stop()  # 쓰레드 종료
+                # self.thread.quit()
                 running = False
+                self.thread.terminate()
+                self.thread.stop()  # 쓰레드 종료
+
 
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             running = True
@@ -202,6 +208,8 @@ class Main(QMainWindow, Ui_MainWindow):
             self.thread.ThreadMessageEvent.connect(self.ThreadMessageEvent)
             self.thread.QTableWidgetUpdate.connect(self.QTableWidgetUpdate)
             self.thread.QLabelWidgetUpdate.connect(self.QLabelWidgetUpdate)
+            self.thread.QTableWidgetSetSort.connect(self.QTableWidgetSetSort)
+
             self.thread.finished.connect(self.on_finished)
 
             # 쓰레드 작업 시작
@@ -237,6 +245,10 @@ class Main(QMainWindow, Ui_MainWindow):
     @pyqtSlot(str)
     def ThreadMessageEvent(self, n):
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
+
+    @pyqtSlot(bool)
+    def QTableWidgetSetSort(self, bool):
+        self.articleView.setSortingEnabled(bool)
 
     @pyqtSlot(list)
     def QTableWidgetUpdate(self, article):
@@ -279,6 +291,8 @@ class Main(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_finished(self):
         pass
+
+
 
 
 app = QApplication([])
