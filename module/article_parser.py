@@ -130,9 +130,10 @@ class DCArticleParser:
                 else:
                     page['end'] = page_box[-2].text.strip()
 
-                if page['end'] == '이전검색':
+                if '이전' in page['end']:
                     page['end'] = 1
-                page['end'] = int(page['end'])
+                else:
+                    page['end'] = int(page['end'])
 
         # next_pos 구하기 (다음 페이지 검색 위치)
         next_pos = soup.select('a.search_next')

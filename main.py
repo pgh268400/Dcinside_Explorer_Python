@@ -31,7 +31,7 @@ class SearchThread(QThread):
     ThreadMessageEvent = pyqtSignal(str)  # 사용자 정의 시그널
     QLabelWidgetUpdate = pyqtSignal(str)  # 라벨 위젯 업데이트
     QTableWidgetUpdate = pyqtSignal(list)  # 테이블 위젯 업데이트
-    QTableWidgetSetSort = pyqtSignal(bool) # 테이블 위젯 컬럼 정렬 기능 ON/OFF
+    QTableWidgetSetSort = pyqtSignal(bool)  # 테이블 위젯 컬럼 정렬 기능 ON/OFF
 
     # 메인폼에서 상속받기
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
@@ -52,7 +52,7 @@ class SearchThread(QThread):
 
         idx = 0
 
-        #데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
+        # 데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
         self.QTableWidgetSetSort.emit(False)
         while True:
             if not running:
@@ -97,17 +97,29 @@ class SearchThread(QThread):
         self.wait(3000)
 
 # 모듈화에 문제가 생겨서 우선 하드 코딩
+
+
 def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(
+        os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
 
 # Main UI Load
 main_ui = resource_path('main.ui')
-Ui_MainWindow = uic.loadUiType(main_ui)[0]  # ui 가져오기
+Ui_MainWindow = uic.loadUiType(main_ui)[0]  # UI 가져오기
 
 
 class Main(QMainWindow, Ui_MainWindow):
+    # 타입 힌트 (IDE 자동 완성 지원을 위해)
+    articleView: QTableWidget
+    txt_repeat: QLineEdit
+    txt_id: QLineEdit
+    txt_keyword: QLineEdit
+    btn_search: QPushButton
+    comboBox: QComboBox
+    txt_status: QLabel
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -163,7 +175,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.articleView.setColumnWidth(0, 60)  # 글 번호
         self.articleView.setColumnWidth(1, 430)  # 제목
         self.articleView.setColumnWidth(2, 50)  # 댓글수
-
         self.articleView.setColumnWidth(3, 100)  # 글쓴이
         self.articleView.setColumnWidth(4, 60)  # 작성일
         self.articleView.setColumnWidth(5, 40)  # 조회
@@ -193,7 +204,6 @@ class Main(QMainWindow, Ui_MainWindow):
                 running = False
                 self.thread.terminate()
                 self.thread.stop()  # 쓰레드 종료
-
 
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             running = True
@@ -291,8 +301,6 @@ class Main(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_finished(self):
         pass
-
-
 
 
 app = QApplication([])
