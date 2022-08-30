@@ -9,15 +9,16 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QIntValidator, QIcon
 from PyQt5.QtWidgets import *
 
+from module.article_parser import DCArticleParser
 from module.headers import search_type
 from module.resource import resource_path
-from module.article_parser import DCArticleParser
 
 # Global --------------------------------------------
 
 # 프로그램 검색기능 실행중일때
 running = False
 parser = None
+
 
 # -------------------------------------------
 
@@ -172,13 +173,15 @@ class Main(QMainWindow, Ui_MainWindow):
                                           '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if dialog == QMessageBox.Yes:
+                self.thread.terminate()
+                self.thread.quit()
+                self.thread.stop()  # 쓰레드 종료
                 running = False
-                self.thread.stop()
 
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             running = True
-            self.articleView.setRowCount(0);  # 글 초기화
-            print(self.articleView.rowCount())
+            self.articleView.setRowCount(0)  # 글 초기화
+            # print(self.articleView.rowCount())
             # all_link.clear()  # 리스트 비우기
 
             # g_type = self.get_gallary_type(self.txt_id.text())
@@ -188,6 +191,7 @@ class Main(QMainWindow, Ui_MainWindow):
             self.thread.ThreadMessageEvent.connect(self.ThreadMessageEvent)
             self.thread.QTableWidgetUpdate.connect(self.QTableWidgetUpdate)
             self.thread.QLabelWidgetUpdate.connect(self.QLabelWidgetUpdate)
+            self.thread.finished.connect(self.on_finished)
 
             # 쓰레드 작업 시작
             self.thread.start()
@@ -225,33 +229,37 @@ class Main(QMainWindow, Ui_MainWindow):
     @pyqtSlot(list)
     def QTableWidgetUpdate(self, article):
         for data in article:
-            rowPosition = self.articleView.rowCount()
-            self.articleView.insertRow(rowPosition)
+            row_position = self.articleView.rowCount()
+            self.articleView.insertRow(row_position)
 
             item_num = QTableWidgetItem()
             item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
-            self.articleView.setItem(rowPosition, 0, item_num)
+            self.articleView.setItem(row_position, 0, item_num)
 
-            self.articleView.setItem(rowPosition, 1, QTableWidgetItem(data['title']))
+            self.articleView.setItem(row_position, 1, QTableWidgetItem(data['title']))
 
             item_reply = QTableWidgetItem()
             item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
-            self.articleView.setItem(rowPosition, 2, item_reply)
+            self.articleView.setItem(row_position, 2, item_reply)
 
-            self.articleView.setItem(rowPosition, 3, QTableWidgetItem(data['nickname']))
-            self.articleView.setItem(rowPosition, 4, QTableWidgetItem(data['timestamp']))
+            self.articleView.setItem(row_position, 3, QTableWidgetItem(data['nickname']))
+            self.articleView.setItem(row_position, 4, QTableWidgetItem(data['timestamp']))
 
             item_refresh = QTableWidgetItem()
             item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
-            self.articleView.setItem(rowPosition, 5, item_refresh)
+            self.articleView.setItem(row_position, 5, item_refresh)
 
             item_recommend = QTableWidgetItem()
             item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
-            self.articleView.setItem(rowPosition, 6, item_recommend)
+            self.articleView.setItem(row_position, 6, item_recommend)
 
     @pyqtSlot(str)
     def QLabelWidgetUpdate(self, data):
         self.txt_status.setText(data)
+
+    @pyqtSlot()
+    def on_finished(self):
+        pass
 
 
 app = QApplication([])

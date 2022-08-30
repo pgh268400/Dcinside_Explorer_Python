@@ -1,11 +1,11 @@
+import time
+
+import aiohttp
+import async_timeout
 import requests
 from bs4 import BeautifulSoup
+
 from module.headers import headers, search_type
-import time
-import aiohttp
-import asyncio
-import async_timeout
-from concurrent.futures import ALL_COMPLETED
 
 
 # 비동기 http 요청 fetch 함수 구현
@@ -25,7 +25,7 @@ class DCArticleParser:
 
         self.__g_type = self.get_gallary_type(dc_id)  # 갤러리 타입 얻어오기
 
-    # 갤러리 타입 가져오기(마이너, 일반)
+    # 갤러리 타입 가져오기(마이너, 일반) - 생성자에서 사용하므로 동기적으로 처리
     def get_gallary_type(self, dc_id):
         # url로 requests를 보내서 redirect시키는지 체크한다.
         url = f'https://gall.dcinside.com/board/lists/?id={dc_id}'
@@ -55,9 +55,9 @@ class DCArticleParser:
                 dc_id = self.__dc_id
 
                 url = f"https://gall.dcinside.com/{g_type}/lists/?id={dc_id}&page={page}&search_pos={search_pos}&s_type={s_type}&s_keyword={keyword}"
-                print(url)
+                # print(url)
 
-                res = await fetch(session, url) # 비동기 http 요청
+                res = await fetch(session, url)  # 비동기 http 요청
                 soup = BeautifulSoup(res, "lxml")
 
                 article_list = soup.select(".us-post")  # 글 박스 전부 select
@@ -83,7 +83,7 @@ class DCArticleParser:
                     recommend = element.select(".gall_recommend")[0].text
                     # print(link, num, title, reply, nickname, timestamp, refresh, recommend)
 
-                    self.__all_link[num] = link;  # 링크 추가
+                    self.__all_link[num] = link  # 링크 추가
 
                     article_data = {'num': num, 'title': title, 'reply': reply, 'nickname': nickname,
                                     'timestamp': timestamp,
@@ -107,10 +107,10 @@ class DCArticleParser:
             article_list = soup.select(".us-post")  # 글 박스 전부 select
             article_count = len(article_list)
             if article_count == 0:  # 글이 없으면
-                page['start'] = 0;
+                page['start'] = 0
                 page['end'] = 0  # 페이지는 없음
             elif article_count < 20:  # 20개 미만이면
-                page['start'] = 1;
+                page['start'] = 1
                 page['end'] = 1  # 1페이지 밖에 없음.
             else:
                 # 끝 보기 버튼이 있나 검사
@@ -119,14 +119,14 @@ class DCArticleParser:
                 if len(page_end_btn) == 2:
                     page_end_btn = page_end_btn[0]
                     final_page = int(page_end_btn['href'].split('&page=')[1].split("&")[0]) + 1
-                    page['start'] = 1;
+                    page['start'] = 1
                     page['end'] = final_page
                 else:
                     page_box = soup.select(
                         '#container > section.left_content.result article > div.bottom_paging_wrap > '
                         'div.bottom_paging_box > a')
 
-                    page['start'] = 1;
+                    page['start'] = 1
                     if len(page_box) == 1:
                         page['end'] = 1
                     else:
@@ -197,27 +197,27 @@ def run():
 
         search_pos = page['next_pos']
 
-
-async def main():
-    parser = DCArticleParser(dc_id="baseball_new11")  # 객체 생성
-    keyword, stype = "ㅎㅇ", search_type["제목+내용"]
-
-    first_page = await parser.page_explorer(keyword, stype)
-    first_next_pos = first_page["next_pos"]
-
-    tmp_pos = first_next_pos
-    task_lst = []
-    for i in range(1,100):
-        future = asyncio.ensure_future(parser.article_parse(keyword, stype, page = 1, search_pos = tmp_pos)) #future = js의 promise와 유사한 것
-        task_lst.append(future)
-        tmp_pos = str(int(tmp_pos) + 10000)
-
-
-    start = time.time()
-    completed, pending = await asyncio.wait(task_lst, return_when=ALL_COMPLETED)
-    print(completed)
-    end = time.time()
-    print(f'>>> 비동기 처리 총 소요 시간: {end - start}')
-
-# 파이썬 3.7 이상 asyncio.run 으로 간단하게 사용 가능
-asyncio.run(main())
+# async def main():
+#     parser = DCArticleParser(dc_id="baseball_new11")  # 객체 생성
+#     keyword, stype = "ㅎㅇ", search_type["제목+내용"]
+#
+#     first_page = await parser.page_explorer(keyword, stype)
+#     first_next_pos = first_page["next_pos"]
+#
+#     tmp_pos = first_next_pos
+#     task_lst = []
+#     for i in range(1, 100):
+#         future = asyncio.ensure_future(
+#             parser.article_parse(keyword, stype, page=1, search_pos=tmp_pos))  # future = js의 promise와 유사한 것
+#         task_lst.append(future)
+#         tmp_pos = str(int(tmp_pos) + 10000)
+#
+#     start = time.time()
+#     completed, pending = await asyncio.wait(task_lst, return_when=ALL_COMPLETED)
+#     print(completed)
+#     end = time.time()
+#     print(f'>>> 비동기 처리 총 소요 시간: {end - start}')
+#
+#
+# # 파이썬 3.7 이상 asyncio.run 으로 간단하게 사용 가능
+# asyncio.run(main())
