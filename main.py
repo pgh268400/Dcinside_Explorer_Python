@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import *
 
 from module.article_parser import DCArticleParser
 from module.headers import search_type
-from module.resource import resource_path
+
+# from module.resource import resource_path
 
 # Global --------------------------------------------
 
@@ -34,7 +35,8 @@ class SearchThread(QThread):
     # 메인폼에서 상속받기
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
         super().__init__(parent)
-        self.parent = parent  # self.parent를 사용하여 부모의 메서드나 데이터에 접근 가능하다. (단 Thread-safe 를 위해 UI는 시그널 - 슬롯으로 접근해야 한다.)
+        # self.parent를 사용하여 부모의 메서드나 데이터에 접근 가능하다. (단 Thread-safe 를 위해 UI는 시그널 - 슬롯으로 접근해야 한다.)
+        self.parent = parent
 
     def run(self):
         global running, parser
@@ -67,8 +69,10 @@ class SearchThread(QThread):
                     if not running:
                         return
 
-                    self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
-                    article = parser.article_parse(keyword, s_type, page=i, search_pos=search_pos)
+                    self.QLabelWidgetUpdate.emit(
+                        f'상태 : {idx}/{loop_count} 탐색중...')
+                    article = parser.article_parse(
+                        keyword, s_type, page=i, search_pos=search_pos)
                     self.QTableWidgetUpdate.emit(article)
 
                     idx += 1  # 글을 하나 탐색하면 + 1
@@ -86,6 +90,11 @@ class SearchThread(QThread):
     def stop(self):
         self.quit()
         self.wait(3000)
+
+# 모듈화에 문제가 생겨서 우선 하드 코딩
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 
 # Main UI Load
@@ -115,7 +124,8 @@ class Main(QMainWindow, Ui_MainWindow):
         keyword = self.txt_keyword.text()
         comboBox = self.comboBox.currentText()
 
-        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword, 'search_type': comboBox}
+        data = {'repeat': repeat, 'gallary_id': gallary_id,
+                'keyword': keyword, 'search_type': comboBox}
         self.save_data(data, 'user_save.dat')
 
         self.deleteLater()
@@ -143,15 +153,16 @@ class Main(QMainWindow, Ui_MainWindow):
         self.txt_repeat.setValidator(self.onlyInt)
 
     def setTableWidget(self):
-        self.articleView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
-        self.articleView.setColumnWidth(0, 60);  # 글 번호
-        self.articleView.setColumnWidth(1, 430);  # 제목
-        self.articleView.setColumnWidth(2, 50);  # 댓글수
+        self.articleView.setEditTriggers(
+            QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
+        self.articleView.setColumnWidth(0, 60)  # 글 번호
+        self.articleView.setColumnWidth(1, 430)  # 제목
+        self.articleView.setColumnWidth(2, 50)  # 댓글수
 
-        self.articleView.setColumnWidth(3, 100);  # 글쓴이
-        self.articleView.setColumnWidth(4, 60);  # 작성일
-        self.articleView.setColumnWidth(5, 40);  # 조회
-        self.articleView.setColumnWidth(6, 40);  # 추천
+        self.articleView.setColumnWidth(3, 100)  # 글쓴이
+        self.articleView.setColumnWidth(4, 60)  # 작성일
+        self.articleView.setColumnWidth(5, 40)  # 조회
+        self.articleView.setColumnWidth(6, 40)  # 추천
 
     def setTableAutoSize(self):
         header = self.articleView.horizontalHeader()
@@ -196,7 +207,8 @@ class Main(QMainWindow, Ui_MainWindow):
             # 쓰레드 작업 시작
             self.thread.start()
         else:
-            QMessageBox.information(self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
+            QMessageBox.information(
+                self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
 
     # 리스트뷰 아이템 더블클릭
     def item_dbl_click(self):
@@ -233,24 +245,31 @@ class Main(QMainWindow, Ui_MainWindow):
             self.articleView.insertRow(row_position)
 
             item_num = QTableWidgetItem()
-            item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
+            item_num.setData(Qt.DisplayRole, int(
+                data['num']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 0, item_num)
 
-            self.articleView.setItem(row_position, 1, QTableWidgetItem(data['title']))
+            self.articleView.setItem(
+                row_position, 1, QTableWidgetItem(data['title']))
 
             item_reply = QTableWidgetItem()
-            item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
+            item_reply.setData(Qt.DisplayRole, int(
+                data['reply']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 2, item_reply)
 
-            self.articleView.setItem(row_position, 3, QTableWidgetItem(data['nickname']))
-            self.articleView.setItem(row_position, 4, QTableWidgetItem(data['timestamp']))
+            self.articleView.setItem(
+                row_position, 3, QTableWidgetItem(data['nickname']))
+            self.articleView.setItem(
+                row_position, 4, QTableWidgetItem(data['timestamp']))
 
             item_refresh = QTableWidgetItem()
-            item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
+            item_refresh.setData(Qt.DisplayRole, int(
+                data['refresh']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 5, item_refresh)
 
             item_recommend = QTableWidgetItem()
-            item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
+            item_recommend.setData(Qt.DisplayRole, int(
+                data['recommend']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 6, item_recommend)
 
     @pyqtSlot(str)
