@@ -1,6 +1,8 @@
-import os, sys
+import os
+import sys
 
-def resource_path(relative_path):
+
+def resource_path(relative_path: str):
     """
 
     :param relative_path: 상대 경로
@@ -10,10 +12,12 @@ def resource_path(relative_path):
 
     """
 
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(
+        os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-def resource_path(relative_path):
+
+def resource_path2(relative_path):
     """
 
     :param relative_path: 상대 경로

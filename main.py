@@ -4,13 +4,14 @@ import sys
 import time
 import webbrowser
 
-from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIntValidator, QIcon
 from PyQt5.QtWidgets import *
+from PyQt5 import QtCore
 
 from module.article_parser import DCArticleParser
 from module.headers import search_type
+from module.ui_loader import ui_auto_complete
 
 # from module.resource import resource_path
 
@@ -18,12 +19,14 @@ from module.headers import search_type
 
 # 프로그램 검색기능 실행중일때
 running = False
-parser = None
-
+parser: DCArticleParser = None
+mutex = QtCore.QMutex()
 
 # -------------------------------------------
 
 # 글 검색 쓰레드
+
+
 class SearchThread(QThread):
     # PYQT의 쓰레드는 UI Update에 있어서 Unsafe하기 때문에
     # 무조건 시그널-슬롯으로 UI 업데이트를 진행해줘야 한다!!
@@ -34,9 +37,11 @@ class SearchThread(QThread):
     QTableWidgetSetSort = pyqtSignal(bool)  # 테이블 위젯 컬럼 정렬 기능 ON/OFF
 
     # 메인폼에서 상속받기
+
     def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
-        super().__init__(parent)
-        # self.parent를 사용하여 부모의 메서드나 데이터에 접근 가능하다. (단 Thread-safe 를 위해 UI는 시그널 - 슬롯으로 접근해야 한다.)
+        super().__init__(parent)  # 부모 메서드의 생성자 호출 - 코드 중복 방지
+        # self.parent를 사용하여 부모의 메서드나 데이터에 read 가능.
+        # (단 Thread-safe 를 위해 UI를 write 할땐 시그널 - 슬롯으로 접근해야 한다.)
         self.parent = parent
 
     def run(self):
@@ -53,6 +58,7 @@ class SearchThread(QThread):
         idx = 0
 
         # 데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
+        # mutex.lock()
         self.QTableWidgetSetSort.emit(False)
         while True:
             if not running:
@@ -91,6 +97,7 @@ class SearchThread(QThread):
 
             search_pos = page['next_pos']
         self.QTableWidgetSetSort.emit(True)
+        # mutex.unlock()
 
     def stop(self):
         self.quit()
@@ -106,25 +113,23 @@ def resource_path(relative_path):
 
 
 # Main UI Load
-main_ui = resource_path('main.ui')
-Ui_MainWindow = uic.loadUiType(main_ui)[0]  # UI 가져오기
+
+# fmt: off
+
+ui_auto_complete("main.ui", "ui.py")  # ui 파일 컴파일
+
+# ui 컴파일 이후 UI를 가져온다
+from ui import Ui_MainWindow
+
+# fmt: on
 
 
 class Main(QMainWindow, Ui_MainWindow):
-    # 타입 힌트 (IDE 자동 완성 지원을 위해)
-    articleView: QTableWidget
-    txt_repeat: QLineEdit
-    txt_id: QLineEdit
-    txt_keyword: QLineEdit
-    btn_search: QPushButton
-    comboBox: QComboBox
-    txt_status: QLabel
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.initializer()
-
         window_ico = resource_path('main.ico')
         self.setWindowIcon(QIcon(window_ico))
         self.show()
@@ -193,17 +198,20 @@ class Main(QMainWindow, Ui_MainWindow):
     # GUI----------------------------------------------
 
     def search(self):  # 글검색
+        self.thread: SearchThread
         global running
 
         if running:  # 이미 실행중이면
             dialog = QMessageBox.question(self, 'Message',
                                           '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
-                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                                          QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
-                # self.thread.quit()
                 running = False
                 self.thread.terminate()
-                self.thread.stop()  # 쓰레드 종료
+                # self.thread.quit()
+                # self.thread.wait()
+                # mutex.unlock()
+                # self.thread.stop()  # 쓰레드 종료
 
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             running = True
@@ -252,15 +260,15 @@ class Main(QMainWindow, Ui_MainWindow):
                 pass
 
     # Slot Event
-    @pyqtSlot(str)
+    @ pyqtSlot(str)
     def ThreadMessageEvent(self, n):
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
 
-    @pyqtSlot(bool)
+    @ pyqtSlot(bool)
     def QTableWidgetSetSort(self, bool):
         self.articleView.setSortingEnabled(bool)
 
-    @pyqtSlot(list)
+    @ pyqtSlot(list)
     def QTableWidgetUpdate(self, article):
         for data in article:
             row_position = self.articleView.rowCount()
@@ -294,11 +302,11 @@ class Main(QMainWindow, Ui_MainWindow):
                 data['recommend']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 6, item_recommend)
 
-    @pyqtSlot(str)
+    @ pyqtSlot(str)
     def QLabelWidgetUpdate(self, data):
         self.txt_status.setText(data)
 
-    @pyqtSlot()
+    @ pyqtSlot()
     def on_finished(self):
         pass
 
