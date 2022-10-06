@@ -1,4 +1,4 @@
-# DCINSIDE_SEARCH
+# Dcinside_Explorer
 ![image](https://user-images.githubusercontent.com/31213158/150639615-f28f4f02-80eb-4514-93dd-74c829c7d539.png)
 
 디시인사이드 글 검색기 입니다.  
