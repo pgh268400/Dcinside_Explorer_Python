@@ -1,0 +1,6 @@
+user_save.dat
+venv/
+.idea/
+.vscode/
+output/
+__pycache__

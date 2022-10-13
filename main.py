@@ -201,42 +201,48 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread: SearchThread
         global running
 
+        if self.txt_id.text() == '' or self.txt_keyword.text() == '' or self.txt_repeat.text() == '':
+            QMessageBox.information(
+                self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
+            return
+
         if running:  # 이미 실행중이면
             dialog = QMessageBox.question(self, 'Message',
                                           '검색이 진행중입니다. 새로 검색을 시작하시겠습니까?',
                                           QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 running = False
-                self.thread.terminate()
+                self.thread.terminate()  # 작동 추가한 부분 (처리 상황에 따라 주석처리) -> 쓰레드 강제 종료
                 # self.thread.quit()
                 # self.thread.wait()
                 # mutex.unlock()
                 # self.thread.stop()  # 쓰레드 종료
+            else:  # 취소 버튼 누른경우 걍 바로 함수 종료
+                return
 
-        if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
-            running = True
-            self.articleView.setRowCount(0)  # 글 초기화
-            # print(self.articleView.rowCount())
-            # all_link.clear()  # 리스트 비우기
+        # 검색 쓰레드 실행 부분
 
-            # g_type = self.get_gallary_type(self.txt_id.text())
-            self.thread = SearchThread(self)
+        running = True
+        self.articleView.setRowCount(0)  # 글 초기화
+        self.thread = SearchThread(self)
 
-            # 쓰레드 이벤트 연결
-            self.thread.ThreadMessageEvent.connect(self.ThreadMessageEvent)
-            self.thread.QTableWidgetUpdate.connect(self.QTableWidgetUpdate)
-            self.thread.QLabelWidgetUpdate.connect(self.QLabelWidgetUpdate)
-            self.thread.QTableWidgetSetSort.connect(self.QTableWidgetSetSort)
+        # 쓰레드 이벤트 연결
+        self.thread.ThreadMessageEvent.connect(
+            self.ThreadMessageEvent)
+        self.thread.QTableWidgetUpdate.connect(
+            self.QTableWidgetUpdate)
+        self.thread.QLabelWidgetUpdate.connect(
+            self.QLabelWidgetUpdate)
+        self.thread.QTableWidgetSetSort.connect(
+            self.QTableWidgetSetSort)
 
-            self.thread.finished.connect(self.on_finished)
+        self.thread.finished.connect(self.on_finished)
 
-            # 쓰레드 작업 시작
-            self.thread.start()
-        else:
-            QMessageBox.information(
-                self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
+        # 쓰레드 작업 시작
+        self.thread.start()
 
     # 리스트뷰 아이템 더블클릭
+
     def item_dbl_click(self):
         global parser
 
