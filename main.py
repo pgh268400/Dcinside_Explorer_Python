@@ -19,6 +19,7 @@ from module.ui_loader import ui_auto_complete
 
 # 프로그램 검색기능 실행중일때
 running = False
+thread_dead = False  # 스레드 종료 여부
 parser: DCArticleParser = None
 mutex = QtCore.QMutex()
 
@@ -27,7 +28,7 @@ mutex = QtCore.QMutex()
 # 글 검색 쓰레드
 
 
-class SearchThread(QThread):
+class Worker(QThread):
     # PYQT의 쓰레드는 UI Update에 있어서 Unsafe하기 때문에
     # 무조건 시그널-슬롯으로 UI 업데이트를 진행해줘야 한다!!
 
@@ -116,7 +117,7 @@ def resource_path(relative_path):
 
 # fmt: off
 
-ui_auto_complete("main.ui", "ui.py")  # ui 파일 컴파일
+ui_auto_complete("main.ui", "ui.py")  # ui 파일 컴파일 (main.ui -> ui.py)
 
 # ui 컴파일 이후 UI를 가져온다
 from ui import Ui_MainWindow
@@ -125,13 +126,15 @@ from ui import Ui_MainWindow
 
 
 class Main(QMainWindow, Ui_MainWindow):
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.initializer()
         window_ico = resource_path('main.ico')
         self.setWindowIcon(QIcon(window_ico))
+        # style = f"QComboBox::down-arrow {{image: url('{resource_path('resource/arrow.png')}');}}"
+        # self.comboBox.setStyleSheet(style)
+        # print(style)
         self.show()
 
     def initializer(self):
@@ -198,7 +201,7 @@ class Main(QMainWindow, Ui_MainWindow):
     # GUI----------------------------------------------
 
     def search(self):  # 글검색
-        self.thread: SearchThread
+        self.thread: Worker
         global running
 
         if self.txt_id.text() == '' or self.txt_keyword.text() == '' or self.txt_repeat.text() == '':
@@ -214,9 +217,14 @@ class Main(QMainWindow, Ui_MainWindow):
                 running = False
                 self.thread.terminate()  # 작동 추가한 부분 (처리 상황에 따라 주석처리) -> 쓰레드 강제 종료
                 # self.thread.quit()
-                # self.thread.wait()
-                # mutex.unlock()
-                # self.thread.stop()  # 쓰레드 종료
+                print("wait for thread to terminate")
+                global thread_dead
+                while not thread_dead:
+                    pass
+                self.thread.wait()  # 쓰레드 종료때까지 대기 (join 메서드 없음)
+
+                print("thread terminated, continue run...")
+                thread_dead = False
             else:  # 취소 버튼 누른경우 걍 바로 함수 종료
                 return
 
@@ -224,7 +232,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
         running = True
         self.articleView.setRowCount(0)  # 글 초기화
-        self.thread = SearchThread(self)
+        self.thread = Worker(self)
 
         # 쓰레드 이벤트 연결
         self.thread.ThreadMessageEvent.connect(
@@ -242,7 +250,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread.start()
 
     # 리스트뷰 아이템 더블클릭
-
     def item_dbl_click(self):
         global parser
 
@@ -314,6 +321,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
     @ pyqtSlot()
     def on_finished(self):
+        global thread_dead
+        thread_dead = True
         pass
 
 

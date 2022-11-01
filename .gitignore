@@ -4,3 +4,4 @@ venv/
 .vscode/
 output/
 __pycache__
+*.pyc
