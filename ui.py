@@ -188,7 +188,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "DCINSIDE ARTICLE FINDER"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "DCINSIDE ARTICLE FINDER v0.152 Beta"))
         self.comboBox.setItemText(0, _translate("MainWindow", "제목+내용"))
         self.comboBox.setItemText(1, _translate("MainWindow", "제목"))
         self.comboBox.setItemText(2, _translate("MainWindow", "내용"))

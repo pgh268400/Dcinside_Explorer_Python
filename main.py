@@ -206,6 +206,10 @@ class Main(QMainWindow, Ui_MainWindow):
                 'keyword': keyword, 'search_type': comboBox}
         self.save_data(data, 'user_save.dat')
 
+
+        if hasattr(self, 'searchWindow'):
+            self.searchWindow.close()
+
         self.deleteLater()
         QCloseEvent.accept()
 
