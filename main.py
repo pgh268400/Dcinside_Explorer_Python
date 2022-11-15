@@ -148,20 +148,24 @@ class SearchWindow(QMainWindow, Ui_MainWindow):
         self.txt_keyword.resize(200, 20)
 
         # QlineEdit CSS 추가
-        self.setStyleSheet(
-            r"QLineEdit { border: 4px solid padding: 4px } QLineEdit: focus{ border: 4px solid rgb(0, 170, 255) }")
-
-        # 타이틀창 간소화 하기
-        self.setWindowFlags(Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
 
         # 아이콘 main.ico 로 창 설정
         self.setWindowIcon(QIcon(resource_path('main.ico')))
+
+        # 종료 버튼만 남기고 숨기기 & Always on Top
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowStaysOnTopHint)
+
+        # 창 크기 변경 못하게 변경
+        self.setFixedSize(200, 20)
 
         # txt_id 엔터 시그널 연결
         self.txt_keyword.returnPressed.connect(self.txt_id_enter)
 
         # self.move(300, 300)
-        self.resize(200, 20)
+        # self.resize(200, 20)
+
+        # 창 Always on top 설정
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.show()
 
     # 엔터키 누르면 종료
@@ -205,7 +209,6 @@ class Main(QMainWindow, Ui_MainWindow):
         data = {'repeat': repeat, 'gallary_id': gallary_id,
                 'keyword': keyword, 'search_type': comboBox}
         self.save_data(data, 'user_save.dat')
-
 
         if hasattr(self, 'searchWindow'):
             self.searchWindow.close()
@@ -430,6 +433,10 @@ class Main(QMainWindow, Ui_MainWindow):
 
         # Ctrl + F 누른 경우 검색 창 (필터링 창) 열기
         elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+            if hasattr(self, 'searchWindow'):
+                # 이미 열려있으면 포커스만 이동 (창 활성화)
+                self.searchWindow.activateWindow()
+                return
             self.searchWindow = SearchWindow()
             self.searchWindow.filtering.connect(self.filtering)
             self.searchWindow.show()
