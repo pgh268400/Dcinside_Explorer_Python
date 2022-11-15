@@ -100,9 +100,9 @@ class Worker(QThread):
         self.QTableWidgetSetSort.emit(True)
         # mutex.unlock()
 
-    def stop(self):
-        self.quit()
-        self.wait(3000)
+    # def stop(self):
+    #     self.quit()
+    #     self.wait(3000)
 
 # 모듈화에 문제가 생겨서 우선 하드 코딩
 
@@ -113,7 +113,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-# Main UI Load
+# Main UI Compile & Load
 
 # fmt: off
 
@@ -123,6 +123,52 @@ ui_auto_complete("main.ui", "ui.py")  # ui 파일 컴파일 (main.ui -> ui.py)
 from ui import Ui_MainWindow
 
 # fmt: on
+
+# SearchWindow
+
+
+class SearchWindow(QMainWindow, Ui_MainWindow):
+    filtering = pyqtSignal(str)  # 필터링 시그널
+
+    # 100,100 창으로 설정
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def txt_id_enter(self):
+        # 현재 검색값을 시그널로 Main윈도우에 넘기기
+        self.filtering.emit(self.txt_keyword.text())
+
+    def initUI(self):
+        self.setWindowTitle('Search Window')
+
+        # 입력창 추가
+        self.txt_keyword = QLineEdit(self)
+        self.txt_keyword.move(0, 0)
+        self.txt_keyword.resize(200, 20)
+
+        # QlineEdit CSS 추가
+        self.setStyleSheet(
+            r"QLineEdit { border: 4px solid padding: 4px } QLineEdit: focus{ border: 4px solid rgb(0, 170, 255) }")
+
+        # 타이틀창 간소화 하기
+        self.setWindowFlags(Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
+
+        # 아이콘 main.ico 로 창 설정
+        self.setWindowIcon(QIcon(resource_path('main.ico')))
+
+        # txt_id 엔터 시그널 연결
+        self.txt_keyword.returnPressed.connect(self.txt_id_enter)
+
+        # self.move(300, 300)
+        self.resize(200, 20)
+        self.show()
+
+    # 엔터키 누르면 종료
+    def keyPressEvent(self, e):
+        # esc 누르면 종료
+        if e.key() == QtCore.Qt.Key_Escape:
+            self.close()
 
 
 class Main(QMainWindow, Ui_MainWindow):
@@ -135,10 +181,17 @@ class Main(QMainWindow, Ui_MainWindow):
         # style = f"QComboBox::down-arrow {{image: url('{resource_path('resource/arrow.png')}');}}"
         # self.comboBox.setStyleSheet(style)
         # print(style)
+
+        # 이전 검색 기록 기억
+        # 파이썬에선 멤버 변수 선언시 생성자에 적어야함.
+        # self를 안적으면 C#이나 Java의 객체 static 선언하고 똑같다고 보면 됨.
+        self.prev_item = ""
+        self.prev_idx = 0
+
         self.show()
 
     def initializer(self):
-        self.setTableWidget()  # Table Widget Column 폭 Fixed
+        self.set_table_widget()  # Table Widget Column 폭 Fixed
         self.set_only_int()  # 반복횟수는 숫자만 입력할 수 있도록 고정
         self.load_data('user_save.dat')
 
@@ -177,7 +230,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.onlyInt = QIntValidator()
         self.txt_repeat.setValidator(self.onlyInt)
 
-    def setTableWidget(self):
+    def set_table_widget(self):
         self.articleView.setEditTriggers(
             QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
         self.articleView.setColumnWidth(0, 60)  # 글 번호
@@ -188,7 +241,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.articleView.setColumnWidth(5, 40)  # 조회
         self.articleView.setColumnWidth(6, 40)  # 추천
 
-    def setTableAutoSize(self):
+    def set_table_autosize(self):
         header = self.articleView.horizontalHeader()
         # 성능을 위해 이제 자동 컬럼조정은 사용하지 않는다.
         # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
@@ -324,6 +377,58 @@ class Main(QMainWindow, Ui_MainWindow):
         global thread_dead
         thread_dead = True
         pass
+
+    @ pyqtSlot(str)
+    def filtering(self, keyword):
+        # Clear current selection.
+        self.articleView.setCurrentItem(None)
+
+        if not keyword:
+            # Empty string, don't search.
+            return
+
+        if self.prev_item == keyword:
+            # 같은 키워드가 들어오면 다음 아이템으로 이동해서 확인
+            self.prev_idx += 1
+        else:
+            # 키워드가 달라지면 처음부터 다시 검색
+            self.prev_idx = 0
+
+        matching_items = self.articleView.findItems(keyword, Qt.MatchContains)
+        matching_item_cnt = len(matching_items)
+        if matching_items:
+            # We have found something.
+            if self.prev_idx >= matching_item_cnt:
+                # 처음부터 다시 검색
+                self.prev_idx = 0
+            item = matching_items[self.prev_idx]  # Take the first.
+            self.prev_item = keyword  # 검색한 내용 기억
+            self.articleView.setCurrentItem(item)
+
+        # print(keyword)
+
+    def keyPressEvent(self, event):
+        # Ctrl + C 누른 경우 Table의 내용 복사
+        # https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
+        if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+            copied_cells = sorted(self.articleView.selectedIndexes())
+
+            copy_text = ''
+            max_column = copied_cells[-1].column()
+            for c in copied_cells:
+                copy_text += self.articleView.item(c.row(), c.column()).text()
+                if c.column() == max_column:
+                    copy_text += '\n'
+                else:
+                    copy_text += '\t'
+
+            QApplication.clipboard().setText(copy_text)
+
+        # Ctrl + F 누른 경우 검색 창 (필터링 창) 열기
+        elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+            self.searchWindow = SearchWindow()
+            self.searchWindow.filtering.connect(self.filtering)
+            self.searchWindow.show()
 
 
 app = QApplication([])
