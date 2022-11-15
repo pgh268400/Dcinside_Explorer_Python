@@ -435,8 +435,10 @@ class Main(QMainWindow, Ui_MainWindow):
         elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
             if hasattr(self, 'searchWindow'):
                 # 이미 열려있으면 포커스만 이동 (창 활성화)
-                self.searchWindow.activateWindow()
-                return
+                if self.searchWindow.isVisible():
+                    self.searchWindow.activateWindow()
+                    return
+
             self.searchWindow = SearchWindow()
             self.searchWindow.filtering.connect(self.filtering)
             self.searchWindow.show()
