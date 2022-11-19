@@ -19,9 +19,8 @@ from module.ui_loader import ui_auto_complete
 
 # 프로그램 검색기능 실행중일때
 running = False
-thread_dead = False  # 스레드 종료 여부
-parser: DCArticleParser = None
-mutex = QtCore.QMutex()
+thread_dead = False  # 쓰레드 종료 여부
+parser: DCArticleParser = None  # 싱글톤 패턴으로 객체는 전역적으로 하나만 사용할 것임.
 
 # -------------------------------------------
 
@@ -59,7 +58,6 @@ class Worker(QThread):
         idx = 0
 
         # 데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
-        # mutex.lock()
         self.QTableWidgetSetSort.emit(False)
         while True:
             if not running:
@@ -98,7 +96,6 @@ class Worker(QThread):
 
             search_pos = page['next_pos']
         self.QTableWidgetSetSort.emit(True)
-        # mutex.unlock()
 
     # def stop(self):
     #     self.quit()
@@ -182,9 +179,16 @@ class Main(QMainWindow, Ui_MainWindow):
         self.initializer()
         window_ico = resource_path('main.ico')
         self.setWindowIcon(QIcon(window_ico))
-        # style = f"QComboBox::down-arrow {{image: url('{resource_path('resource/arrow.png')}');}}"
-        # self.comboBox.setStyleSheet(style)
-        # print(style)
+
+        # 인스턴스 변수 (다른 언어에선 static 변수 , 객체가 공유), 사실 창 객체는 하나만 만들꺼라 별 의미 없음
+        arrow_path = resource_path('./resource/arrow.png')
+
+        # arrow_path 경로를 슬래시로 변경 (윈도우 역슬래시 경로 문자열을 슬래쉬로 바꿔줘야함. 아니면 인식을 못하네용.. ㅠ)
+        arrow_path = arrow_path.replace('\\', '/')
+
+        style = f"QComboBox::down-arrow {{image: url(%s);}}" % (arrow_path)
+        self.comboBox.setStyleSheet(style)
+        print(style)
 
         # 이전 검색 기록 기억
         # 파이썬에선 멤버 변수 선언시 생성자에 적어야함.
