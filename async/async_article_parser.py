@@ -63,7 +63,8 @@ class DCArticleParser:
                 article_list = soup.select(".us-post")  # 글 박스 전부 select
                 for element in article_list:
                     # 글 박스를 하나씩 반복하면서 정보 추출
-                    link = "https://gall.dcinside.com/" + element.select("a")[0]['href'].strip()
+                    link = "https://gall.dcinside.com/" + \
+                        element.select("a")[0]['href'].strip()
                     num = element.select(".gall_num")[0].text
                     img = element.select(".ub-word > a > em.icon_pic")
                     if img:
@@ -72,9 +73,11 @@ class DCArticleParser:
                         img = False
 
                     title = element.select(".ub-word > a")[0].text
-                    reply = element.select(".ub-word > a.reply_numbox > .reply_num")
+                    reply = element.select(
+                        ".ub-word > a.reply_numbox > .reply_num")
                     if reply:
-                        reply = reply[0].text.replace("[", "").replace("]", "").split("/")[0]
+                        reply = reply[0].text.replace(
+                            "[", "").replace("]", "").split("/")[0]
                     else:
                         reply = 0
                     nickname = element.select(".ub-writer")[0].text.strip()
@@ -118,7 +121,8 @@ class DCArticleParser:
 
                 if len(page_end_btn) == 2:
                     page_end_btn = page_end_btn[0]
-                    final_page = int(page_end_btn['href'].split('&page=')[1].split("&")[0]) + 1
+                    final_page = int(page_end_btn['href'].split(
+                        '&page=')[1].split("&")[0]) + 1
                     page['start'] = 1
                     page['end'] = final_page
                 else:
@@ -139,7 +143,8 @@ class DCArticleParser:
             # next_pos 구하기 (다음 페이지 검색 위치)
             next_pos = soup.select('a.search_next')
             if next_pos:  # 다음 찾기가 존재하면
-                next_pos = soup.select('a.search_next')[0]['href'].split('&search_pos=')[1].split("&")[0]
+                next_pos = soup.select('a.search_next')[0]['href'].split(
+                    '&search_pos=')[1].split("&")[0]
             else:  # 미존재시
                 next_pos = 'last'
             page['next_pos'] = next_pos
@@ -182,7 +187,8 @@ def run():
                     return
 
                 print(f'상태 : {idx}/{loop_count} 탐색중...')
-                page_article = parser.article_parse(keyword, search_type["제목+내용"], page=i, search_pos=search_pos)
+                page_article = parser.article_parse(
+                    keyword, search_type["제목+내용"], page=i, search_pos=search_pos)
                 print(page_article)
 
                 idx += 1  # 페이지 글들을 하나 탐색하면 + 1

@@ -1,7 +1,10 @@
+# 이 아래 __future__ import 문을 쓰면 Class 내부에서 Class 변수 타입 힌트를 적거나 (순환 참조 문제 해결) , 나중에 Class 가 나와도 앞에서 타입 힌트를 적을 수 있다.
+from __future__ import annotations
 import os
 import pickle
 import sys
 import time
+from typing import Optional
 import webbrowser
 
 from PyQt5.QtCore import *
@@ -12,6 +15,7 @@ from PyQt5 import QtCore
 from module.article_parser import DCArticleParser
 from module.headers import search_type
 from module.ui_loader import ui_auto_complete
+from type.article_parser import Article, Page, SaveData
 
 # from module.resource import resource_path
 
@@ -20,7 +24,7 @@ from module.ui_loader import ui_auto_complete
 # 프로그램 검색기능 실행중일때
 running = False
 thread_dead = False  # 쓰레드 종료 여부
-parser: DCArticleParser = None  # 싱글톤 패턴으로 객체는 전역적으로 하나만 사용할 것임.
+parser: Optional[DCArticleParser] = None  # 싱글톤 패턴으로 객체는 전역적으로 하나만 사용할 것임.
 
 # -------------------------------------------
 
@@ -38,14 +42,19 @@ class Worker(QThread):
 
     # 메인폼에서 상속받기
 
-    def __init__(self, parent):  # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
-        super().__init__(parent)  # 부모 메서드의 생성자 호출 - 코드 중복 방지
-        # self.parent를 사용하여 부모의 메서드나 데이터에 read 가능.
-        # (단 Thread-safe 를 위해 UI를 write 할땐 시그널 - 슬롯으로 접근해야 한다.)
-        self.parent = parent
+    # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
+    def __init__(self, parent : Main) -> None:
+        super().__init__(parent)  # 부모 Class의 생성자 호출 - 코드 중복 방지
+        # 클래스 변수 self.parent로 WindowClass 인스턴스를 접근할 수 있다.
+        self.parent : Main = parent
 
-    def run(self):
+    def run(self) -> None:
         global running, parser
+        # self.parent를 사용하여 부모의 메서드나 데이터에 read 가능.
+        # (단 Race Condition 방지를 위해 UI를 write 할땐 시그널 - 슬롯으로 접근해야 한다.)
+        # Qt의 UI들은 thread safe 하지 않다.
+        # 아무래도 더 구조적인 방법은 Read던 Write 던 시그널 - 슬롯으로 접근하는게 좋아보임
+        # 상속으로 직접 접근하는건 그렇게 좋아보이진 않음.
 
         search_pos = ''
         id = self.parent.txt_id.text()
@@ -59,28 +68,25 @@ class Worker(QThread):
 
         # 데이터 삽입 중엔 Column 정렬기능을 OFF 하자. (ON 할 경우 다운될 수도 있음.)
         self.QTableWidgetSetSort.emit(False)
-        while True:
-            if not running:
-                return
-
+        while running:
             if idx > loop_count or search_pos == 'last':
                 self.QLabelWidgetUpdate.emit('상태 : 검색 완료')
                 self.ThreadMessageEvent.emit('작업이 완료되었습니다.')
                 running = False
                 break
 
-            page = parser.page_explorer(keyword, s_type, search_pos)
+            page: Page = parser.page_explorer(keyword, s_type, search_pos)
             # print(page)
 
-            if not page['start'] == 0:  # 글이 있으면
+            if not page.start == 0:  # 글이 있으면
 
-                for i in range(page['start'], page['end'] + 1):
+                for i in range(page.start, page.end + 1):
                     if not running:
                         return
 
                     self.QLabelWidgetUpdate.emit(
                         f'상태 : {idx}/{loop_count} 탐색중...')
-                    article = parser.article_parse(
+                    article: list[Article] = parser.article_parse(
                         keyword, s_type, page=i, search_pos=search_pos)
                     self.QTableWidgetUpdate.emit(article)
 
@@ -94,7 +100,7 @@ class Worker(QThread):
             self.QLabelWidgetUpdate.emit(f'상태 : {idx}/{loop_count} 탐색중...')
             idx += 1  # 글을 못찾고 넘어가도 + 1
 
-            search_pos = page['next_pos']
+            search_pos = page.next_pos
         self.QTableWidgetSetSort.emit(True)
 
     # def stop(self):
@@ -104,7 +110,7 @@ class Worker(QThread):
 # 모듈화에 문제가 생겨서 우선 하드 코딩
 
 
-def resource_path(relative_path):
+def resource_path(relative_path : str) -> str:
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(
         os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
@@ -128,15 +134,15 @@ class SearchWindow(QMainWindow, Ui_MainWindow):
     filtering = pyqtSignal(str)  # 필터링 시그널
 
     # 100,100 창으로 설정
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.initUI()
 
-    def txt_id_enter(self):
+    def txt_id_enter(self) -> None:
         # 현재 검색값을 시그널로 Main윈도우에 넘기기
         self.filtering.emit(self.txt_keyword.text())
 
-    def initUI(self):
+    def initUI(self) -> None:
         self.setWindowTitle('Search Window')
 
         # 입력창 추가
@@ -150,7 +156,8 @@ class SearchWindow(QMainWindow, Ui_MainWindow):
         self.setWindowIcon(QIcon(resource_path('main.ico')))
 
         # 종료 버튼만 남기고 숨기기 & Always on Top
-        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.WindowCloseButtonHint |
+                            Qt.WindowStaysOnTopHint)  # type: ignore
 
         # 창 크기 변경 못하게 변경
         self.setFixedSize(200, 20)
@@ -166,29 +173,35 @@ class SearchWindow(QMainWindow, Ui_MainWindow):
         self.show()
 
     # 엔터키 누르면 종료
-    def keyPressEvent(self, e):
+    def keyPressEvent(self, e) -> None:
         # esc 누르면 종료
         if e.key() == QtCore.Qt.Key_Escape:
             self.close()
 
 
 class Main(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    # 경로의 경우 모든 객체가 공유하도록 설계. 해당 폼 클래스 역시 싱글톤이기 때문에 사실 큰 의미는 없다.
+    ICO_PATH = 'main.ico'
+    ARROW_PATH = './resource/arrow.png'
+    SAVE_FILE_PATH = 'user_save.dat'
+
+    def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
         self.initializer()
-        window_ico = resource_path('main.ico')
+
+        window_ico = resource_path(Main.ICO_PATH)
         self.setWindowIcon(QIcon(window_ico))
 
         # 인스턴스 변수 (다른 언어에선 static 변수 , 객체가 공유), 사실 창 객체는 하나만 만들꺼라 별 의미 없음
-        arrow_path = resource_path('./resource/arrow.png')
+        arrow_path = resource_path(Main.ARROW_PATH)
 
         # arrow_path 경로를 슬래시로 변경 (윈도우 역슬래시 경로 문자열을 슬래쉬로 바꿔줘야함. 아니면 인식을 못하네용.. ㅠ)
         arrow_path = arrow_path.replace('\\', '/')
 
         style = f"QComboBox::down-arrow {{image: url(%s);}}" % (arrow_path)
         self.comboBox.setStyleSheet(style)
-        print(style)
+        # print(style)
 
         # 이전 검색 기록 기억
         # 파이썬에선 멤버 변수 선언시 생성자에 적어야함.
@@ -198,21 +211,20 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.show()
 
-    def initializer(self):
+    def initializer(self) -> None:
         self.set_table_widget()  # Table Widget Column 폭 Fixed
         self.set_only_int()  # 반복횟수는 숫자만 입력할 수 있도록 고정
-        self.load_data('user_save.dat')
+        self.load_data(Main.SAVE_FILE_PATH)
 
     # 폼 종료 이벤트
-    def closeEvent(self, QCloseEvent):
+    def closeEvent(self, QCloseEvent) -> None:
         repeat = self.txt_repeat.text()
         gallary_id = self.txt_id.text()
         keyword = self.txt_keyword.text()
         comboBox = self.comboBox.currentText()
 
-        data = {'repeat': repeat, 'gallary_id': gallary_id,
-                'keyword': keyword, 'search_type': comboBox}
-        self.save_data(data, 'user_save.dat')
+        data: SaveData = SaveData(repeat, gallary_id, keyword, comboBox)
+        self.save_data(data, Main.SAVE_FILE_PATH)
 
         if hasattr(self, 'searchWindow'):
             self.searchWindow.close()
@@ -220,28 +232,30 @@ class Main(QMainWindow, Ui_MainWindow):
         self.deleteLater()
         QCloseEvent.accept()
 
-    def save_data(self, dict, filename):
+    def save_data(self, data, filename) -> None:
         # 데이터 저장
         with open(filename, 'wb') as fw:
-            pickle.dump(dict, fw)
+            pickle.dump(data, fw)
 
-    def load_data(self, filename):
+    def load_data(self, filename) -> None:
         if os.path.isfile(filename):
             with open(filename, 'rb') as fr:
-                data = pickle.load(fr)
-                self.txt_repeat.setText(data['repeat'])
-                self.txt_id.setText(data['gallary_id'])
-                self.txt_keyword.setText(data['keyword'])
-                self.comboBox.setCurrentText(data['search_type'])
+                data_dict: dict[str, str] = pickle.load(fr)
+                converted_data = SaveData(*data_dict)
+
+                self.txt_repeat.setText(converted_data.repeat)
+                self.txt_id.setText(converted_data.gallary_id)
+                self.txt_keyword.setText(converted_data.keyword)
+                self.comboBox.setCurrentText(converted_data.search_type)
 
         else:
             return
 
-    def set_only_int(self):
+    def set_only_int(self) -> None:
         self.onlyInt = QIntValidator()
         self.txt_repeat.setValidator(self.onlyInt)
 
-    def set_table_widget(self):
+    def set_table_widget(self) -> None:
         self.articleView.setEditTriggers(
             QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
         self.articleView.setColumnWidth(0, 60)  # 글 번호
@@ -252,19 +266,20 @@ class Main(QMainWindow, Ui_MainWindow):
         self.articleView.setColumnWidth(5, 40)  # 조회
         self.articleView.setColumnWidth(6, 40)  # 추천
 
-    def set_table_autosize(self):
+    def set_table_autosize(self, isAutoResize : bool) -> None:
+        # 성능을 위해 사이즈 정책은 검색 완료후 변경하도록 한다.
+        # 해당 함수는 검색 완료후 2번 호출된다. (정책만 바꿔서 오토 리사이징 시키고 다시 정책을 원래대로 돌려놓기 위함)
+        # isAutoResize : True - 자동 사이즈 조절, False - 고정 사이즈
+        column_cnt = self.articleView.columnCount()
         header = self.articleView.horizontalHeader()
-        # 성능을 위해 이제 자동 컬럼조정은 사용하지 않는다.
-        # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        # header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        # header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        # header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        # header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        # header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        if (isAutoResize):
+            [header.setSectionResizeMode(i, QHeaderView.ResizeToContents) for i in range(column_cnt)]
+        else:
+            [header.setSectionResizeMode(i, QHeaderView.Fixed) for i in range(column_cnt)]
 
-    # GUI----------------------------------------------
+            # GUI----------------------------------------------
 
-    def search(self):  # 글검색
+    def search(self) -> None:  # 글검색
         self.thread: Worker
         global running
 
@@ -314,7 +329,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread.start()
 
     # 리스트뷰 아이템 더블클릭
-    def item_dbl_click(self):
+    def item_dbl_click(self) -> None:
         global parser
 
         if parser:
@@ -338,59 +353,59 @@ class Main(QMainWindow, Ui_MainWindow):
 
     # Slot Event
     @ pyqtSlot(str)
-    def ThreadMessageEvent(self, n):
+    def ThreadMessageEvent(self, n : str) -> None:
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
 
     @ pyqtSlot(bool)
-    def QTableWidgetSetSort(self, bool):
+    def QTableWidgetSetSort(self, bool : bool) -> None:
         self.articleView.setSortingEnabled(bool)
 
     @ pyqtSlot(list)
-    def QTableWidgetUpdate(self, article):
+    def QTableWidgetUpdate(self, article: list[Article]) -> None:
         for data in article:
             row_position = self.articleView.rowCount()
             self.articleView.insertRow(row_position)
 
             item_num = QTableWidgetItem()
             item_num.setData(Qt.DisplayRole, int(
-                data['num']))  # 숫자로 설정 (정렬을 위해)
+                data.num))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 0, item_num)
 
             self.articleView.setItem(
-                row_position, 1, QTableWidgetItem(data['title']))
+                row_position, 1, QTableWidgetItem(data.title))
 
             item_reply = QTableWidgetItem()
             item_reply.setData(Qt.DisplayRole, int(
-                data['reply']))  # 숫자로 설정 (정렬을 위해)
+                data.reply))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 2, item_reply)
 
             self.articleView.setItem(
-                row_position, 3, QTableWidgetItem(data['nickname']))
+                row_position, 3, QTableWidgetItem(data.nickname))
             self.articleView.setItem(
-                row_position, 4, QTableWidgetItem(data['timestamp']))
+                row_position, 4, QTableWidgetItem(data.timestamp))
 
             item_refresh = QTableWidgetItem()
             item_refresh.setData(Qt.DisplayRole, int(
-                data['refresh']))  # 숫자로 설정 (정렬을 위해)
+                data.refresh))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 5, item_refresh)
 
             item_recommend = QTableWidgetItem()
             item_recommend.setData(Qt.DisplayRole, int(
-                data['recommend']))  # 숫자로 설정 (정렬을 위해)
+                data.recommend))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 6, item_recommend)
 
     @ pyqtSlot(str)
-    def QLabelWidgetUpdate(self, data):
+    def QLabelWidgetUpdate(self, data) -> None:
         self.txt_status.setText(data)
 
     @ pyqtSlot()
-    def on_finished(self):
+    def on_finished(self) -> None:
         global thread_dead
         thread_dead = True
         pass
 
     @ pyqtSlot(str)
-    def filtering(self, keyword):
+    def filtering(self, keyword) -> None:
         # Clear current selection.
         self.articleView.setCurrentItem(None)
 
@@ -418,11 +433,11 @@ class Main(QMainWindow, Ui_MainWindow):
 
         # print(keyword)
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event : PyQt5.QtGui.QKeyEvent) -> None:
         # Ctrl + C 누른 경우 Table의 내용 복사
         # https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
-        if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
-            copied_cells = sorted(self.articleView.selectedIndexes())
+        if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier): # type: ignore
+            copied_cells = sorted(self.articleView.selectedIndexes()) # type: ignore
 
             copy_text = ''
             max_column = copied_cells[-1].column()
@@ -436,7 +451,7 @@ class Main(QMainWindow, Ui_MainWindow):
             QApplication.clipboard().setText(copy_text)
 
         # Ctrl + F 누른 경우 검색 창 (필터링 창) 열기
-        elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+        elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier): # type: ignore
             if hasattr(self, 'searchWindow'):
                 # 이미 열려있으면 포커스만 이동 (창 활성화)
                 if self.searchWindow.isVisible():

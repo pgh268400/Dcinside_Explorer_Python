@@ -6,10 +6,10 @@
 
 from distutils.dep_util import newer
 import os
-from PyQt5 import uic
+from PyQt5 import uic # type: ignore
 
 
-def ui_auto_complete(ui_dir, ui_to_py_dir):
+def ui_auto_complete(ui_dir : str, ui_to_py_dir : str) -> None:
     encoding = 'utf-8'
 
     # UI 파일이 존재하지 않으면 아무 작업도 수행하지 않는다.
@@ -19,9 +19,10 @@ def ui_auto_complete(ui_dir, ui_to_py_dir):
 
     # UI 파일이 업데이트 됬는지 확인하고, 업데이트 되었으면 *.py로 변환한다
     if not newer(ui_dir, ui_to_py_dir):
-        print("UI has not changed!")
+        pass
+        # print("UI has not changed!")
     else:
-        print("UI changed detected, compiling...")
+        # print("UI changed detected, compiling...")
         # ui 파일이 업데이트 되었다, py파일을 연다.
         fp = open(ui_to_py_dir, "w", encoding=encoding)
         # ui 파일을 py파일로 컴파일한다.

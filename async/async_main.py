@@ -10,7 +10,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIntValidator, QIcon
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QAbstractItemView, QMainWindow
-from module.async_article_parser import DCArticleParser
+from async_article_parser import DCArticleParser
 from qasync import asyncSlot, QApplication
 
 from module.headers import search_type
@@ -76,7 +76,8 @@ class Main(QMainWindow, Ui_MainWindow):
         keyword = self.txt_keyword.text()
         comboBox = self.comboBox.currentText()
 
-        data = {'repeat': repeat, 'gallary_id': gallary_id, 'keyword': keyword, 'search_type': comboBox}
+        data = {'repeat': repeat, 'gallary_id': gallary_id,
+                'keyword': keyword, 'search_type': comboBox}
         self.save_data(data, '../user_save.dat')
 
         self.deleteLater()
@@ -104,15 +105,16 @@ class Main(QMainWindow, Ui_MainWindow):
         self.txt_repeat.setValidator(self.onlyInt)
 
     def setTableWidget(self):
-        self.articleView.setEditTriggers(QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
-        self.articleView.setColumnWidth(0, 60);  # 글 번호
-        self.articleView.setColumnWidth(1, 430);  # 제목
-        self.articleView.setColumnWidth(2, 50);  # 댓글수
+        self.articleView.setEditTriggers(
+            QAbstractItemView.NoEditTriggers)  # TableWidget 읽기 전용 설정
+        self.articleView.setColumnWidth(0, 60)  # 글 번호
+        self.articleView.setColumnWidth(1, 430)  # 제목
+        self.articleView.setColumnWidth(2, 50)  # 댓글수
 
-        self.articleView.setColumnWidth(3, 100);  # 글쓴이
-        self.articleView.setColumnWidth(4, 60);  # 작성일
-        self.articleView.setColumnWidth(5, 40);  # 조회
-        self.articleView.setColumnWidth(6, 40);  # 추천
+        self.articleView.setColumnWidth(3, 100)  # 글쓴이
+        self.articleView.setColumnWidth(4, 60)  # 작성일
+        self.articleView.setColumnWidth(5, 40)  # 조회
+        self.articleView.setColumnWidth(6, 40)  # 추천
 
     def setTableAutoSize(self):
         header = self.articleView.horizontalHeader()
@@ -141,7 +143,8 @@ class Main(QMainWindow, Ui_MainWindow):
         if self.txt_id.text() != '' and self.txt_keyword.text() != '' and self.txt_repeat.text() != '':
             task = asyncio.create_task(self.run())
         else:
-            QMessageBox.information(self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
+            QMessageBox.information(
+                self, '알림', '값을 전부 입력해주세요.', QMessageBox.Yes)
 
     async def run(self):
         global running, parser
@@ -195,7 +198,8 @@ class Main(QMainWindow, Ui_MainWindow):
                     if idx > loop_count or search_pos == 'last':
                         break
 
-                    await asyncio.sleep(0.1)  # 디시 서버를 위한 딜레이 (비동기 Non-Blocking 을 위해 동기 time.sleep 을 사용하지 않는다.)
+                    # 디시 서버를 위한 딜레이 (비동기 Non-Blocking 을 위해 동기 time.sleep 을 사용하지 않는다.)
+                    await asyncio.sleep(0.1)
 
             label.run(f'상태 : {idx}/{loop_count} 탐색중...')
             idx += 1  # 글을 못찾고 넘어가도 + 1
@@ -238,24 +242,31 @@ class Main(QMainWindow, Ui_MainWindow):
             self.articleView.insertRow(row_position)
 
             item_num = QTableWidgetItem()
-            item_num.setData(Qt.DisplayRole, int(data['num']))  # 숫자로 설정 (정렬을 위해)
+            item_num.setData(Qt.DisplayRole, int(
+                data['num']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 0, item_num)
 
-            self.articleView.setItem(row_position, 1, QTableWidgetItem(data['title']))
+            self.articleView.setItem(
+                row_position, 1, QTableWidgetItem(data['title']))
 
             item_reply = QTableWidgetItem()
-            item_reply.setData(Qt.DisplayRole, int(data['reply']))  # 숫자로 설정 (정렬을 위해)
+            item_reply.setData(Qt.DisplayRole, int(
+                data['reply']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 2, item_reply)
 
-            self.articleView.setItem(row_position, 3, QTableWidgetItem(data['nickname']))
-            self.articleView.setItem(row_position, 4, QTableWidgetItem(data['timestamp']))
+            self.articleView.setItem(
+                row_position, 3, QTableWidgetItem(data['nickname']))
+            self.articleView.setItem(
+                row_position, 4, QTableWidgetItem(data['timestamp']))
 
             item_refresh = QTableWidgetItem()
-            item_refresh.setData(Qt.DisplayRole, int(data['refresh']))  # 숫자로 설정 (정렬을 위해)
+            item_refresh.setData(Qt.DisplayRole, int(
+                data['refresh']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 5, item_refresh)
 
             item_recommend = QTableWidgetItem()
-            item_recommend.setData(Qt.DisplayRole, int(data['recommend']))  # 숫자로 설정 (정렬을 위해)
+            item_recommend.setData(Qt.DisplayRole, int(
+                data['recommend']))  # 숫자로 설정 (정렬을 위해)
             self.articleView.setItem(row_position, 6, item_recommend)
 
     @pyqtSlot(str)
