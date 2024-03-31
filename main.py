@@ -438,6 +438,8 @@ class Main(QMainWindow, Ui_MainWindow):
         # print(keyword)
 
     def keyPressEvent(self, event: PyQt5.QtGui.QKeyEvent) -> None:
+        global parser
+
         # Ctrl + C 누른 경우 Table의 내용 복사
         # https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
         if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):  # type: ignore
@@ -447,6 +449,16 @@ class Main(QMainWindow, Ui_MainWindow):
             copy_text = ''
             max_column = copied_cells[-1].column()
             for c in copied_cells:
+                # 링크도 복사
+                if c.column() == 0 and parser:
+                    all_link = parser.get_link_list()
+                    article_id = self.articleView.item(c.row(), 0).text()
+
+                    target_link = all_link[article_id]
+                    # print(all_link, article_id)
+                    # print(target_link)
+                    copy_text += (target_link + '\t')
+
                 copy_text += self.articleView.item(c.row(), c.column()).text()
                 if c.column() == max_column:
                     copy_text += '\n'
