@@ -3,6 +3,7 @@ venv/
 .idea/
 .vscode/
 output/
-__pycache__
+__pycache__/
 *.pyc
-module/__pycache__
+module/__pycache__/
+*.pyc

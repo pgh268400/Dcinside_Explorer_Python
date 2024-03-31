@@ -43,10 +43,10 @@ class Worker(QThread):
     # 메인폼에서 상속받기
 
     # parent는 WindowClass에서 전달하는 self이다.(WidnowClass의 인스턴스)
-    def __init__(self, parent : Main) -> None:
+    def __init__(self, parent: Main) -> None:
         super().__init__(parent)  # 부모 Class의 생성자 호출 - 코드 중복 방지
         # 클래스 변수 self.parent로 WindowClass 인스턴스를 접근할 수 있다.
-        self.parent : Main = parent
+        self.parent: Main = parent
 
     def run(self) -> None:
         global running, parser
@@ -110,7 +110,7 @@ class Worker(QThread):
 # 모듈화에 문제가 생겨서 우선 하드 코딩
 
 
-def resource_path(relative_path : str) -> str:
+def resource_path(relative_path: str) -> str:
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(
         os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
@@ -199,7 +199,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # arrow_path 경로를 슬래시로 변경 (윈도우 역슬래시 경로 문자열을 슬래쉬로 바꿔줘야함. 아니면 인식을 못하네용.. ㅠ)
         arrow_path = arrow_path.replace('\\', '/')
 
-        style = f"QComboBox::down-arrow {{image: url(%s);}}" % (arrow_path)
+        style = f"QComboBox::down-arrow {{image: url(%s);}}" % arrow_path
         self.comboBox.setStyleSheet(style)
         # print(style)
 
@@ -266,16 +266,19 @@ class Main(QMainWindow, Ui_MainWindow):
         self.articleView.setColumnWidth(5, 40)  # 조회
         self.articleView.setColumnWidth(6, 40)  # 추천
 
-    def set_table_autosize(self, isAutoResize : bool) -> None:
+
+    def set_table_autosize(self, isAutoResize: bool) -> None:
         # 성능을 위해 사이즈 정책은 검색 완료후 변경하도록 한다.
         # 해당 함수는 검색 완료후 2번 호출된다. (정책만 바꿔서 오토 리사이징 시키고 다시 정책을 원래대로 돌려놓기 위함)
         # isAutoResize : True - 자동 사이즈 조절, False - 고정 사이즈
         column_cnt = self.articleView.columnCount()
         header = self.articleView.horizontalHeader()
         if (isAutoResize):
-            [header.setSectionResizeMode(i, QHeaderView.ResizeToContents) for i in range(column_cnt)]
+            [header.setSectionResizeMode(
+                i, QHeaderView.ResizeToContents) for i in range(column_cnt)]
         else:
-            [header.setSectionResizeMode(i, QHeaderView.Fixed) for i in range(column_cnt)]
+            [header.setSectionResizeMode(i, QHeaderView.Fixed)
+             for i in range(column_cnt)]
 
             # GUI----------------------------------------------
 
@@ -353,15 +356,16 @@ class Main(QMainWindow, Ui_MainWindow):
 
     # Slot Event
     @ pyqtSlot(str)
-    def ThreadMessageEvent(self, n : str) -> None:
+    def ThreadMessageEvent(self, n: str) -> None:
         QMessageBox.information(self, '알림', n, QMessageBox.Yes)
 
     @ pyqtSlot(bool)
-    def QTableWidgetSetSort(self, bool : bool) -> None:
+    def QTableWidgetSetSort(self, bool: bool) -> None:
         self.articleView.setSortingEnabled(bool)
 
     @ pyqtSlot(list)
     def QTableWidgetUpdate(self, article: list[Article]) -> None:
+        
         for data in article:
             row_position = self.articleView.rowCount()
             self.articleView.insertRow(row_position)
@@ -433,11 +437,12 @@ class Main(QMainWindow, Ui_MainWindow):
 
         # print(keyword)
 
-    def keyPressEvent(self, event : PyQt5.QtGui.QKeyEvent) -> None:
+    def keyPressEvent(self, event: PyQt5.QtGui.QKeyEvent) -> None:
         # Ctrl + C 누른 경우 Table의 내용 복사
         # https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
-        if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier): # type: ignore
-            copied_cells = sorted(self.articleView.selectedIndexes()) # type: ignore
+        if event.key() == Qt.Key.Key_C and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):  # type: ignore
+            copied_cells = sorted(
+                self.articleView.selectedIndexes())  # type: ignore
 
             copy_text = ''
             max_column = copied_cells[-1].column()
@@ -451,7 +456,7 @@ class Main(QMainWindow, Ui_MainWindow):
             QApplication.clipboard().setText(copy_text)
 
         # Ctrl + F 누른 경우 검색 창 (필터링 창) 열기
-        elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier): # type: ignore
+        elif event.key() == Qt.Key.Key_F and (event.modifiers() & Qt.KeyboardModifier.ControlModifier):  # type: ignore
             if hasattr(self, 'searchWindow'):
                 # 이미 열려있으면 포커스만 이동 (창 활성화)
                 if self.searchWindow.isVisible():

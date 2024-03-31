@@ -23,7 +23,7 @@ class DCAsyncParser:
     }
     requests_limit = 50
 
-    # 어짜피 싱글톤으로 설계할거라 객체 간의 변수 공유 문제는 생각하지 않아도 됨.
+   
 
     # 생성자에는 async를 붙일 수 없으므로, static 메서드를 이용하여 생성자를 대체한다.
     # https://stackoverflow.com/questions/36363278/can-async-await-be-used-in-constructors
@@ -146,7 +146,7 @@ class DCAsyncParser:
         self.keyword = keyword
 
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=DCAsyncParser.requests_limit), headers=DCAsyncParser.headers) as session:
-            async with limiter:
+            # async with limiter:
                 # 제일 처음 검색 페이지에 요청을 던져서 글 갯수 (검색 위치) 를 파악한다.
                 url = f'https://gall.dcinside.com/{self.gallary_type}board/lists/?id={self.id}&s_type={self.search_type}&s_keyword={self.keyword}'
                 res = await self.fetch(session, url)
@@ -238,8 +238,11 @@ class DCAsyncParser:
 
                 return article_list
 
-limiter = AsyncLimiter(1, 0.125)
+# limiter = AsyncLimiter(1, 0.125)
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    parser = asyncio.run(DCAsyncParser.create(id='taiko'))
-    asyncio.run(parser.search(search_type=Search.TITLE_PLUS_CONTENT, keyword='타타콘', repeat_cnt=9999))
+    # parser = asyncio.run(DCAsyncParser.create(id='taiko'))
+    # asyncio.run(parser.search(search_type=Search.TITLE_PLUS_CONTENT, keyword='타타콘', repeat_cnt=9999))
+    parser = asyncio.run(DCAsyncParser.create(id='baseball_new11'))
+    asyncio.run(parser.search(search_type=Search.TITLE_PLUS_CONTENT, keyword='야붕이', repeat_cnt=9999))
+

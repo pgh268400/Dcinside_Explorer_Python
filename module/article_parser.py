@@ -61,7 +61,15 @@ class DCArticleParser:
                 else:
                     img = False
 
-                title = element.select(".ub-word > a")[0].text
+                # 이유는 모르겠으나 디시 사이트가 바뀐건지 .text 로 가져오면
+                # 아래와 같이
+                # Article(num='번호', title='\n데이터', reply='1', nickname='ㅇㅇ(118.235)', timestamp='03.30', refresh='208', recommend='0')
+                # 데이터 앞에 \n 이 붙어서 strip() 으로 썰어줬다.
+                # strip()은 문자열의 시작과 끝에 있는 줄바꿈과 공백을 제거합니다.
+                # 원래 strip 은 공백 제거 기능만 있는줄 알았더니 줄바꿈 기능도 있었다!
+                # https://codechacha.com/ko/python-remove-newline-in-string/ 참고
+                title = element.select(".ub-word > a")[0].text.strip()
+
                 reply = element.select(
                     ".ub-word > a.reply_numbox > .reply_num")
                 if reply:

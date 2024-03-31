@@ -16,50 +16,51 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(812, 802)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("main.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("main.ico"),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("QLineEdit {\n"
-"    border: 4px solid #3B4890;\n"
-"    padding: 4px;\n"
-"}\n"
-"\n"
-"QLineEdit:focus{\n"
-"    border: 4px solid rgb(0, 170, 255);\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #3b4890;\n"
-"    min-width: 5em;\n"
-"    padding: 8px;\n"
-"    color:white;\n"
-"\n"
-"    border-style: outset;\n"
-"    border-width: 2px;\n"
-"    border-radius : 5px;\n"
-"\n"
-"    border-color: beige;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"   background-color: #29367C;\n"
-"    border-style: inset;\n"
-"}\n"
-"\n"
-"QComboBox {\n"
-"    border: 4px solid #3B4890;\n"
-"    padding: 4px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down \n"
-"{\n"
-"    border: 0px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(git.png);\n"
-"    width: 28px;\n"
-"    height: 28px;\n"
-"}")
+                                 "    border: 4px solid #3B4890;\n"
+                                 "    padding: 4px;\n"
+                                 "}\n"
+                                 "\n"
+                                 "QLineEdit:focus{\n"
+                                 "    border: 4px solid rgb(0, 170, 255);\n"
+                                 "}\n"
+                                 "\n"
+                                 "QPushButton {\n"
+                                 "    background-color: #3b4890;\n"
+                                 "    min-width: 5em;\n"
+                                 "    padding: 8px;\n"
+                                 "    color:white;\n"
+                                 "\n"
+                                 "    border-style: outset;\n"
+                                 "    border-width: 2px;\n"
+                                 "    border-radius : 5px;\n"
+                                 "\n"
+                                 "    border-color: beige;\n"
+                                 "}\n"
+                                 "\n"
+                                 "QPushButton:pressed {\n"
+                                 "   background-color: #29367C;\n"
+                                 "    border-style: inset;\n"
+                                 "}\n"
+                                 "\n"
+                                 "QComboBox {\n"
+                                 "    border: 4px solid #3B4890;\n"
+                                 "    padding: 4px;\n"
+                                 "}\n"
+                                 "\n"
+                                 "QComboBox::drop-down \n"
+                                 "{\n"
+                                 "    border: 0px;\n"
+                                 "}\n"
+                                 "\n"
+                                 "QComboBox::down-arrow {\n"
+                                 "    image: url(git.png);\n"
+                                 "    width: 28px;\n"
+                                 "    height: 28px;\n"
+                                 "}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -67,7 +68,8 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.horizontalLayout.setSizeConstraint(
+            QtWidgets.QLayout.SetDefaultConstraint)
         self.horizontalLayout.setSpacing(2)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.comboBox = QtWidgets.QComboBox(self.centralwidget)
@@ -89,8 +91,8 @@ class Ui_MainWindow(object):
         self.txt_repeat.setFont(font)
         self.txt_repeat.setToolTip("")
         self.txt_repeat.setStyleSheet("#searchBox {\n"
-"    border: 4px solid #3b4890;\n"
-"}")
+                                      "    border: 4px solid #3b4890;\n"
+                                      "}")
         self.txt_repeat.setObjectName("txt_repeat")
         self.horizontalLayout.addWidget(self.txt_repeat)
         self.txt_id = QtWidgets.QLineEdit(self.centralwidget)
@@ -100,8 +102,8 @@ class Ui_MainWindow(object):
         self.txt_id.setFont(font)
         self.txt_id.setToolTip("")
         self.txt_id.setStyleSheet("#searchBox {\n"
-"    border: 4px solid #3b4890;\n"
-"}")
+                                  "    border: 4px solid #3b4890;\n"
+                                  "}")
         self.txt_id.setObjectName("txt_id")
         self.horizontalLayout.addWidget(self.txt_id)
         self.txt_keyword = QtWidgets.QLineEdit(self.centralwidget)
@@ -127,8 +129,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.articleView = QtWidgets.QTableWidget(self.centralwidget)
         self.articleView.setStyleSheet("QLabel#label{\n"
-"color : rgb(85, 85, 255)\n"
-"}")
+                                       "color : rgb(85, 85, 255)\n"
+                                       "}")
         self.articleView.setShowGrid(True)
         self.articleView.setGridStyle(QtCore.Qt.SolidLine)
         self.articleView.setObjectName("articleView")
@@ -159,8 +161,8 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setStyleSheet("QLabel#label{\n"
-"color : rgb(85, 85, 255)\n"
-"}")
+                                 "color : rgb(85, 85, 255)\n"
+                                 "}")
         self.label.setObjectName("label")
         self.horizontalLayout_2.addWidget(self.label)
         self.txt_status = QtWidgets.QLabel(self.centralwidget)
@@ -168,7 +170,8 @@ class Ui_MainWindow(object):
         font.setFamily("나눔고딕")
         font.setPointSize(10)
         self.txt_status.setFont(font)
-        self.txt_status.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.txt_status.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.txt_status.setObjectName("txt_status")
         self.horizontalLayout_2.addWidget(self.txt_status)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -179,16 +182,20 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.btn_Search.clicked.connect(MainWindow.search) # type: ignore
-        self.articleView.itemDoubleClicked['QTableWidgetItem*'].connect(MainWindow.item_dbl_click) # type: ignore
-        self.txt_keyword.returnPressed.connect(MainWindow.search) # type: ignore
-        self.txt_id.returnPressed.connect(MainWindow.search) # type: ignore
-        self.txt_repeat.returnPressed.connect(MainWindow.search) # type: ignore
+        self.btn_Search.clicked.connect(MainWindow.search)  # type: ignore
+        self.articleView.itemDoubleClicked['QTableWidgetItem*'].connect(
+            MainWindow.item_dbl_click)  # type: ignore
+        self.txt_keyword.returnPressed.connect(
+            MainWindow.search)  # type: ignore
+        self.txt_id.returnPressed.connect(MainWindow.search)  # type: ignore
+        self.txt_repeat.returnPressed.connect(
+            MainWindow.search)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "DCINSIDE ARTICLE FINDER v0.152 Beta"))
+        MainWindow.setWindowTitle(_translate(
+            "MainWindow", "DCINSIDE ARTICLE FINDER v0.152 Beta"))
         self.comboBox.setItemText(0, _translate("MainWindow", "제목+내용"))
         self.comboBox.setItemText(1, _translate("MainWindow", "제목"))
         self.comboBox.setItemText(2, _translate("MainWindow", "내용"))
@@ -213,7 +220,8 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "조회"))
         item = self.articleView.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "추천"))
-        self.label.setText(_translate("MainWindow", "Copyright 2022. File(pgh268400@naver.com) all rights reserved."))
+        self.label.setText(_translate(
+            "MainWindow", "Copyright 2022. File(pgh268400@naver.com) all rights reserved."))
         self.txt_status.setText(_translate("MainWindow", "상태 : IDLE"))
 
 
